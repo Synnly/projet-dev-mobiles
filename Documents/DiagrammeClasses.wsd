@@ -1,0 +1,50 @@
+@startuml
+
+class Modele{
+    Sring nomModele
+    int idModele
+    Modele()
+    Piece getPiece(int idPiece)
+    void ajouterPiece(Piece p)
+    boolean estValide()
+}
+
+class Piece{
+    String nomPiece
+    int idPiece
+    Piece(Modele m)
+    Mur murMord()
+    Mur murSud()
+    Mur murEst()
+    Mur murOuest()
+    void ajouterMur(Mur m)
+    void ajouterPorte(Porte p)
+    Porte getPorte(int idPorte)
+    boolean estValide()
+}
+
+class Mur{
+    int idMur
+    int orientation
+    Mur(Piece p)
+    void ajouterImage(Image i)
+    Image getImage()
+    void ajouterPorte(Porte p)
+    int getOrientation()
+
+}
+
+class Porte{
+    int idPorte
+    int orientationA, orientationB
+    Porte(Mur a, Mur b)
+    Mur getMurA()
+    Mur getMurB()
+    boolean estValide()
+}
+Modele "1"--"*" Piece
+Piece "1"--"4" Mur
+Mur "2"--"*" Porte
+Mur --"1" Image
+Porte --"2" Rectangle
+@enduml
