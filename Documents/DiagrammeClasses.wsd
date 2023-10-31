@@ -26,7 +26,7 @@ class Piece{
 class Mur{
     int idMur
     int orientation
-    Mur(Piece p)
+    Mur(Piece p, int orientation)
     void ajouterImage(Image i)
     Image getImage()
     void ajouterPorte(Porte p)
@@ -36,7 +36,6 @@ class Mur{
 
 class Porte{
     int idPorte
-    int orientationA, orientationB
     Porte(Mur a, Mur b)
     Mur getMurA()
     Mur getMurB()
