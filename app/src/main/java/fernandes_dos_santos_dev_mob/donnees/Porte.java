@@ -1,10 +1,10 @@
-package com.example.fernandes_dos_santos_dev_mob.donnees;
+package fernandes_dos_santos_dev_mob.donnees;
 
 import android.graphics.Rect;
-import com.example.fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionMursIdentiques;
-import com.example.fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionNombreRectangleInvalide;
-import com.example.fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionOrientationsIncoherentes;
-import com.example.fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionPiecesIdentiques;
+import fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionMursIdentiques;
+import fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionNombreRectangleInvalide;
+import fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionOrientationsIncoherentes;
+import fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionPiecesIdentiques;
 
 public class Porte {
     private int idPorte;

@@ -1,4 +1,4 @@
-package com.example.fernandes_dos_santos_dev_mob.exceptions.piece;
+package fernandes_dos_santos_dev_mob.exceptions.piece;
 
 public class ExceptionPiecesReliesParPlusieursMurs extends Exception{
     public ExceptionPiecesReliesParPlusieursMurs(int idPiece1, int idPiece2){

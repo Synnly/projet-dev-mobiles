@@ -1,4 +1,4 @@
-package com.example.fernandes_dos_santos_dev_mob.exceptions.modele;
+package fernandes_dos_santos_dev_mob.exceptions.modele;
 
 public class ExceptionAucunePiece extends Exception {
     public ExceptionAucunePiece() {

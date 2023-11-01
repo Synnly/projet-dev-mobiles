@@ -1,9 +1,8 @@
-package com.example.fernandes_dos_santos_dev_mob.donnees;
+package fernandes_dos_santos_dev_mob.donnees;
 
-import com.example.fernandes_dos_santos_dev_mob.exceptions.modele.ExceptionAucunePiece;
+import fernandes_dos_santos_dev_mob.exceptions.modele.ExceptionAucunePiece;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Modele {
     private String nomModele;

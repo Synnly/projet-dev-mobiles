@@ -1,4 +1,4 @@
-package com.example.fernandes_dos_santos_dev_mob.exceptions.porte;
+package fernandes_dos_santos_dev_mob.exceptions.porte;
 
 public class ExceptionMursIdentiques extends Exception{
     public ExceptionMursIdentiques(int idPorte){

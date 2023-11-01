@@ -1,8 +1,14 @@
-package com.example.fernandes_dos_santos_dev_mob;
+package fernandes_dos_santos_dev_mob;
 
 import android.graphics.Rect;
-import com.example.fernandes_dos_santos_dev_mob.donnees.*;
-import com.example.fernandes_dos_santos_dev_mob.exceptions.porte.*;
+import fernandes_dos_santos_dev_mob.donnees.Modele;
+import fernandes_dos_santos_dev_mob.donnees.Mur;
+import fernandes_dos_santos_dev_mob.donnees.Piece;
+import fernandes_dos_santos_dev_mob.donnees.Porte;
+import fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionMursIdentiques;
+import fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionNombreRectangleInvalide;
+import fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionOrientationsIncoherentes;
+import fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionPiecesIdentiques;
 import junit.framework.TestCase;
 import org.junit.jupiter.api.BeforeEach;
 

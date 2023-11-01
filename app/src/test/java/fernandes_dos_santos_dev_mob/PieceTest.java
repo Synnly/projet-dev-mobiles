@@ -1,31 +1,32 @@
-package com.example.fernandes_dos_santos_dev_mob;
+package fernandes_dos_santos_dev_mob;
 
 import android.graphics.Rect;
-import com.example.fernandes_dos_santos_dev_mob.donnees.*;
-import com.example.fernandes_dos_santos_dev_mob.exceptions.piece.ExceptionNombreMursInvalide;
-import com.example.fernandes_dos_santos_dev_mob.exceptions.piece.ExceptionPiecesReliesParPlusieursMurs;
+import fernandes_dos_santos_dev_mob.donnees.Modele;
+import fernandes_dos_santos_dev_mob.donnees.Mur;
+import fernandes_dos_santos_dev_mob.donnees.Piece;
+import fernandes_dos_santos_dev_mob.donnees.Porte;
+import fernandes_dos_santos_dev_mob.exceptions.piece.ExceptionNombreMursInvalide;
+import fernandes_dos_santos_dev_mob.exceptions.piece.ExceptionPiecesReliesParPlusieursMurs;
 import junit.framework.TestCase;
 
 public class PieceTest extends TestCase {
 
     private Modele modele;
-    private Piece piece1, piece2, piece3;
+    private Piece piece1, piece2;
     private Mur mur1, mur2, mur3, mur4, mur5, mur6, mur7, mur8;
-    private Porte porte1, porte2, port3;
-    private Rect rect1, rect2, rect3;
+    private Porte porte1, porte2;
+    private Rect rect1, rect2;
 
     public void setUp() throws Exception {
         super.setUp();
         modele = new Modele();
         piece1 = new Piece(modele);
         piece2 = new Piece(modele);
-        piece3 = new Piece(modele);
         mur1 = new Mur(Mur.NORD);
         mur2 = new Mur(Mur.EST);
         mur3 = new Mur(Mur.SUD);
         rect1 = new Rect(0, 0, 0, 0);
         rect2 = new Rect(0, 0, 0, 0);
-        rect3 = new Rect(0, 0, 0, 0);
     }
 
     public void testAjouterMur() {

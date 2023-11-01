@@ -1,7 +1,7 @@
-package com.example.fernandes_dos_santos_dev_mob.donnees;
+package fernandes_dos_santos_dev_mob.donnees;
 
-import com.example.fernandes_dos_santos_dev_mob.exceptions.piece.ExceptionNombreMursInvalide;
-import com.example.fernandes_dos_santos_dev_mob.exceptions.piece.ExceptionPiecesReliesParPlusieursMurs;
+import fernandes_dos_santos_dev_mob.exceptions.piece.ExceptionNombreMursInvalide;
+import fernandes_dos_santos_dev_mob.exceptions.piece.ExceptionPiecesReliesParPlusieursMurs;
 
 import java.util.ArrayList;
 

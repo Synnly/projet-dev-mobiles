@@ -1,12 +1,10 @@
-package com.example.fernandes_dos_santos_dev_mob.donnees;
+package fernandes_dos_santos_dev_mob.donnees;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;
-import com.example.fernandes_dos_santos_dev_mob.exceptions.mur.ExceptionPortesSeSuperposent;
+import fernandes_dos_santos_dev_mob.exceptions.mur.ExceptionPortesSeSuperposent;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 public class Mur {
     public static final int NORD = 0;

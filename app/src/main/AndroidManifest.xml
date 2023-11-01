@@ -13,7 +13,7 @@
             android:theme="@style/Theme.Fernandesdossantosdevmob"
             tools:targetApi="31">
         <activity
-                android:name=".MainActivity"
+                android:name="fernandes_dos_santos_dev_mob.MainActivity"
                 android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

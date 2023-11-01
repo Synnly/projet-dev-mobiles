@@ -1,7 +1,8 @@
-package com.example.fernandes_dos_santos_dev_mob;
+package fernandes_dos_santos_dev_mob;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import com.example.fernandes_dos_santos_dev_mob.R;
 
 public class MainActivity extends AppCompatActivity {
 

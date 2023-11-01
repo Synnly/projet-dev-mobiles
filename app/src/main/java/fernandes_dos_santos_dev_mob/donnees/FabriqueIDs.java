@@ -1,4 +1,4 @@
-package com.example.fernandes_dos_santos_dev_mob.donnees;
+package fernandes_dos_santos_dev_mob.donnees;
 
 public class FabriqueIDs {
     private static FabriqueIDs instance = new FabriqueIDs();
