@@ -236,4 +236,18 @@ public class PorteTest extends TestCase {
         }
     }
 
+    public void testValiderPiecesIdentiques(){
+        murB = new Mur(pieceA, Mur.SUD);
+        porte1.setMurB(murB, rectangleB);
+        try {
+            porte1.valider();
+        }
+        catch (ExceptionPiecesIdentiques e){
+            assert(("Les deux pièces de la porte " + porte1.getIdPorte() + " sont identiques").equals(e.getMessage())):"Erreur : l'exception n'a pas le bon message d'erreur";
+        }
+        catch (Exception e){
+            fail("Erreur : valider() ne lance pas l'exception ExceptionPiecesIdentiques quand les pièces sont identiques");
+        }
+    }
+
 }

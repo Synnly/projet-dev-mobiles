@@ -4,6 +4,7 @@ import android.graphics.Rect;
 import com.example.fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionMursIdentiques;
 import com.example.fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionNombreRectangleInvalide;
 import com.example.fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionOrientationsIncoherentes;
+import com.example.fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionPiecesIdentiques;
 
 public class Porte {
     private int idPorte;
@@ -130,6 +131,10 @@ public class Porte {
         // Verifie que les murs sont bien adjacents
         if(murA.getOrientation() != (murB.getOrientation()+2)%4) {
             throw new ExceptionOrientationsIncoherentes(idPorte);
+        }
+
+        if(murA.getPiece() == murB.getPiece()) {
+            throw new ExceptionPiecesIdentiques(idPorte);
         }
     }
 }

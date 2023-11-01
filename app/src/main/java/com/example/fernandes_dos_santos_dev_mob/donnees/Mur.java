@@ -1,6 +1,8 @@
 package com.example.fernandes_dos_santos_dev_mob.donnees;
 
 import android.graphics.Bitmap;
+import android.graphics.Rect;
+import com.example.fernandes_dos_santos_dev_mob.exceptions.mur.ExceptionPortesSeSuperposent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +19,8 @@ public class Mur {
     private Bitmap image;
     private ArrayList<Porte> listePortes;
 
+    private Piece piece;
+
     /**
      * Constructeur d'un mur.
      *
@@ -27,6 +31,7 @@ public class Mur {
         this.idMur = FabriqueIDs.getinstance().getIDMur();
         this.image = null;
         this.listePortes = new ArrayList<>();
+        this.piece = p;
 
         if (orientation < 0 || orientation > 3) {
             this.orientation = Mur.NORD;
@@ -40,6 +45,13 @@ public class Mur {
      */
     public int getIdMur() {
         return idMur;
+    }
+
+    /**
+     * Renvoie la pièce à laquelle appartient le mur
+     */
+    public Piece getPiece() {
+        return piece;
     }
 
     /**
@@ -90,10 +102,19 @@ public class Mur {
 
     /**
      * Verifie si le mur est valide. Un mur est valide si toutes ses portes sont valides. Voir Porte.valider() pour les exceptions lancées
+     * @throws ExceptionPortesSeSuperposent Si deux portes se superposent
      */
     public void valider() throws Exception {
         for (Porte porte : this.listePortes) {
             porte.valider();
+
+            for(Porte porte1 : this.listePortes){
+                Rect a = porte.getRectangle(this);
+                Rect b = porte1.getRectangle(this);
+                if(a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom){
+                    throw new ExceptionPortesSeSuperposent(porte.getIdPorte(), porte1.getIdPorte());
+                }
+            }
         }
     }
 
