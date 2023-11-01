@@ -19,8 +19,10 @@ public class PorteTest extends TestCase {
         modele = new Modele();
         pieceA = new Piece(modele); pieceB = new Piece(modele);
         pieceC = new Piece(modele); pieceD = new Piece(modele);
-        murA = new Mur(pieceA, Mur.NORD); murB = new Mur(pieceB, Mur.SUD);
-        murC = new Mur(pieceC, Mur.EST); murD = new Mur(pieceD, Mur.OUEST);
+        murA = new Mur(Mur.NORD); murB = new Mur(Mur.SUD);
+        murC = new Mur(Mur.EST); murD = new Mur(Mur.OUEST);
+        pieceA.ajouterMur(murA); pieceB.ajouterMur(murB);
+        pieceC.ajouterMur(murC); pieceD.ajouterMur(murD);
         rectangleA = new Rect(0, 0, 0, 0);
         rectangleB = new Rect(10, 10, 10, 10);
         rectangleC = new Rect(10, 10, 10, 10);
@@ -115,16 +117,35 @@ public class PorteTest extends TestCase {
     public void testValiderOrientationCorrect(){
         try{
             porte1.setMurB(murB, rectangleB);
+            System.out.println(porte1.getMurA().getIdMur());
+            System.out.println(porte1.getMurB().getIdMur());
+            System.out.println(porte1.getMurA().getPiece().getIdPiece());
+            System.out.println(porte1.getMurB().getPiece().getIdPiece());
             porte1.valider();
+        }
+        catch (Exception e){
+            fail("Erreur : valider() lance une exception sur une porte valide");
+        }
 
+        try{
             porte1.setMurA(murB, rectangleB);
             porte1.setMurB(murA, rectangleA);
             porte1.valider();
+        }
+        catch (Exception e){
+            fail("Erreur : valider() lance une exception sur une porte valide");
+        }
 
+        try{
             porte1.setMurA(murC, rectangleC);
             porte1.setMurB(murD, rectangleD);
             porte1.valider();
+        }
+        catch (Exception e){
+            fail("Erreur : valider() lance une exception sur une porte valide");
+        }
 
+        try{
             porte1.setMurA(murC, rectangleC);
             porte1.setMurB(murD, rectangleD);
             porte1.valider();
@@ -237,7 +258,7 @@ public class PorteTest extends TestCase {
     }
 
     public void testValiderPiecesIdentiques(){
-        murB = new Mur(pieceA, Mur.SUD);
+        murB = new Mur(Mur.SUD);
         porte1.setMurB(murB, rectangleB);
         try {
             porte1.valider();

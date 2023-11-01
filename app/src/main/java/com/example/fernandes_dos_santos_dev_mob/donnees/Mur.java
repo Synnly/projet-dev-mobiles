@@ -23,15 +23,13 @@ public class Mur {
 
     /**
      * Constructeur d'un mur.
-     *
-     * @param p           La pièce à laquelle appartient le mur
      * @param orientation L'orientation du mur. Les valeurs possibles sont : Mur.NORD, Mur.EST, Mur.SUD, Mur.OUEST. Si l'orientation n'est pas valide, l'orientation par défaut est Mur.NORD
      */
-    public Mur(Piece p, int orientation) {
+    public Mur(int orientation) {
         this.idMur = FabriqueIDs.getinstance().getIDMur();
         this.image = null;
         this.listePortes = new ArrayList<>();
-        this.piece = p;
+        this.piece = null;
 
         if (orientation < 0 || orientation > 3) {
             this.orientation = Mur.NORD;
@@ -52,6 +50,14 @@ public class Mur {
      */
     public Piece getPiece() {
         return piece;
+    }
+
+    /**
+     * Modifie la pièce à laquelle appartient le mur
+     * @param piece La pièce à laquelle appartient le mur
+     */
+    public void setPiece(Piece piece) {
+        this.piece = piece;
     }
 
     /**
