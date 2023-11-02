@@ -4,29 +4,29 @@ class Modele{
     Sring nomModele
     int idModele
     Modele()
+    Modele(String nomModele)
     Piece getPiece(int idPiece)
     void ajouterPiece(Piece p)
-    boolean estValide()
+    boolean valider()
 }
 
 class Piece{
     String nomPiece
     int idPiece
+    Piece(String nomPiece, Modele m)
     Piece(Modele m)
-    Mur murMord()
-    Mur murSud()
-    Mur murEst()
-    Mur murOuest()
+    Mur getMur(int orientation)
     void ajouterMur(Mur m)
     void ajouterPorte(Porte p)
+    void retirerPorte(Porte p)
     Porte getPorte(int idPorte)
-    boolean estValide()
+    boolean valider()
 }
 
 class Mur{
     int idMur
     int orientation
-    Mur(Piece p, int orientation)
+    Mur(int orientation)
     void ajouterImage(Image i)
     Image getImage()
     void ajouterPorte(Porte p)
@@ -36,14 +36,18 @@ class Mur{
 
 class Porte{
     int idPorte
-    Porte(Mur a, Mur b)
+    Porte(Mur a, Rect rectangle)
+    void setMurA(Mur mur, Rect rectangle)
+    void setMurB(Mur mur, Rect rectangle)
     Mur getMurA()
     Mur getMurB()
-    boolean estValide()
+    Rect getRectangle(Mur mur)
+    void setRectangle(Mur mur, Rect rectangle)
+    boolean valider()
 }
 Modele "1"--"*" Piece
 Piece "1"--"4" Mur
 Mur "2"--"*" Porte
 Mur --"1" Image
-Porte --"2" Rectangle
+Porte --"2" Rect
 @enduml
