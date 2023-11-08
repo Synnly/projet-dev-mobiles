@@ -26,6 +26,18 @@ public class Porte {
     }
 
     /**
+     * Constructeur de copie profonde d'une porte. À utiliser en conjonction avec setMurA et setMurB pour compléter la copie.
+     * @param p La porte à copier
+     */
+    public Porte(Porte p){
+        this.idPorte = p.idPorte;
+        this.murA = null;
+        this.rectangleA = null;
+        this.murB = null;
+        this.rectangleB = null;
+    }
+
+    /**
      * Renvoie l'identifiant de la porte
      */
     public int getIdPorte() {

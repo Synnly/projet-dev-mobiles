@@ -29,6 +29,23 @@ public class Modele {
     }
 
     /**
+     * Constructeur de copie profonde d'un modèle
+     * @param m Le modèle à copier
+     */
+    public Modele(Modele m){
+        this.nomModele = m.nomModele;
+        this.idModele = m.idModele;
+        this.listePieces = new ArrayList<>();
+        for(Piece p : m.listePieces){
+            this.listePieces.add(new Piece(p, this));
+        }
+    }
+
+    public String getNom() {
+        return nomModele;
+    }
+
+    /**
      * Ajoute une pièce au modèle
      * @param piece La pièce à ajouter
      */
@@ -48,5 +65,9 @@ public class Modele {
         for(Piece piece : this.listePieces){
             piece.valider();
         }
+    }
+
+    public ArrayList<Piece> getListePieces() {
+        return listePieces;
     }
 }

@@ -1,9 +1,11 @@
 package fernandes_dos_santos_dev_mob.donnees;
 
+import android.graphics.Rect;
 import fernandes_dos_santos_dev_mob.exceptions.piece.ExceptionNombreMursInvalide;
 import fernandes_dos_santos_dev_mob.exceptions.piece.ExceptionPiecesReliesParPlusieursMurs;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Piece {
     private String nomPiece;
@@ -21,6 +23,7 @@ public class Piece {
         this.modele = modele;
         this.idPiece = FabriqueIDs.getinstance().getIDPiece();
         this.listeMurs = new ArrayList<>(4);
+        modele.ajouterPiece(this);
     }
 
     /**
@@ -32,6 +35,50 @@ public class Piece {
         this.idPiece = FabriqueIDs.getinstance().getIDPiece();
         this.nomPiece = "Piece " + this.idPiece;
         this.listeMurs = new ArrayList<>(4);
+        modele.ajouterPiece(this);
+    }
+
+    /**
+     * Constructeur de copie profonde d'une pièce
+     * @param p La pièce à copier
+     * @param m Le modèle dans laquelle sera insérée la pièce copiée
+     */
+    public Piece(Piece p, Modele m){
+        this.nomPiece = p.nomPiece;
+        this.idPiece = p.idPiece;
+        this.modele = m;
+        this.listeMurs = new ArrayList<>(4);
+        HashMap<Integer, Porte> listePortes = new HashMap<>();
+        HashMap<Integer, Mur> listeNouveauxMurs = new HashMap<>();
+        ArrayList<Porte> portesDejaAjoutees = new ArrayList<>();
+
+        // Creation des murs sans portes dans un premier temps
+        for(Mur mur : p.listeMurs){
+            this.listeMurs.add(new Mur(mur, this));
+
+            // On ajoute les portes dans une liste temporaire
+            for(Porte porte : mur.getListePortes()){
+                listePortes.put(porte.getIdPorte(), porte);
+            }
+        }
+        // Dictionnaire des copies des murs
+        for(Mur mur : listeMurs){
+            listeNouveauxMurs.put(mur.getIdMur(), mur);
+        }
+
+        // On ajoute les portes aux murs
+        for(int i=0; i<listeMurs.size(); i++){
+            listeMurs.get(i).setPiece(this);
+
+            for(Porte porte : p.getListeMurs().get(i).getListePortes()){ // Parcours des portes du mur de la pièce à copier
+                if(!portesDejaAjoutees.contains(porte)){ // Si la porte n'a pas déjà été ajoutée
+                    Porte nouvellePorte = new Porte(listePortes.get(porte.getIdPorte())); // La porte à copie peut etre null, à vérifier
+                    nouvellePorte.setMurA(listeNouveauxMurs.get(porte.getMurA().getIdMur()), new Rect(porte.getRectangle(porte.getMurA())));
+                    nouvellePorte.setMurB(listeNouveauxMurs.get(porte.getMurB().getIdMur()), new Rect(porte.getRectangle(porte.getMurB())));
+                    portesDejaAjoutees.add(porte);
+                }
+            }
+        }
     }
 
     /**
@@ -54,6 +101,14 @@ public class Piece {
      */
     public void setNomPiece(String nomPiece) {
         this.nomPiece = nomPiece;
+    }
+
+    public Modele getModele() {
+        return modele;
+    }
+
+    public ArrayList<Mur> getListeMurs() {
+        return listeMurs;
     }
 
     /**

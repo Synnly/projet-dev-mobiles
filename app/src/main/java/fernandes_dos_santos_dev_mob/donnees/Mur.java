@@ -37,6 +37,19 @@ public class Mur {
     }
 
     /**
+     * Constructeur de copie profonde d'un mur
+     * @param m Le mur à copier
+     * @param p La pièce dans laquelle sera inséré le mur copié
+     */
+    public Mur(Mur m, Piece p){
+        this.idMur = m.idMur;
+        this.orientation = m.orientation;
+        this.image = m.image;
+        this.listePortes = new ArrayList<>();
+        this.piece = p;
+    }
+
+    /**
      * Renvoie l'identifiant du mur
      */
     public int getIdMur() {
