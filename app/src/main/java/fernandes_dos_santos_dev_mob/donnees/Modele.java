@@ -47,8 +47,19 @@ public class Modele {
         }
     }
 
+    /**
+     * Renvoie le nom du modèle
+     */
     public String getNomModele() {
         return nomModele;
+    }
+
+    /**
+     * Modifie le nom du modèle
+     * @param nomModele Le nouveau nom du modèle
+     */
+    public void setNomModele(String nomModele) {
+        this.nomModele = nomModele;
     }
 
     /**

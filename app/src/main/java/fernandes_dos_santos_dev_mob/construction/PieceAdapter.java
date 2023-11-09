@@ -45,16 +45,13 @@ public class PieceAdapter extends RecyclerView.Adapter<PieceAdapter.PieceViewHol
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    Log.i("Piece", piece==null?"null":"not null");
                     if(piece != null) {
                         piece.setNomPiece(s.toString());
-                        Log.i("Piece", piece.getNomPiece());
                     }
                 }
             });
-
-
         }
+
         public void setPiece(Piece p){
             this.piece = p;
         }

@@ -1,8 +1,11 @@
 package fernandes_dos_santos_dev_mob.construction;
 
 import android.content.Intent;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import androidx.activity.result.ActivityResult;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +27,8 @@ public class ModifierModeleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modifier_modele);
 
+        // TODO : Reset la fabrique d'ids de pieces au nombre de pieces --> saut d'id (0 -> 5 -> 8 -> 13 au lieu de 0 -> 1 -> 2 ...) qd nouvelle piece cree a cause de de/serialisation du modele en json
+
         String modeleJSON = getIntent().getStringExtra("modele");
         Log.i("System.out", modeleJSON);
         try {
@@ -34,8 +39,23 @@ public class ModifierModeleActivity extends AppCompatActivity {
 
         modeleEnModification = new Modele(modele);
 
-        ((TextView) findViewById(R.id.texteNomModele)).setText(modeleEnModification.getNomModele());
+        // Nom du modele
+        EditText nomModele = findViewById(R.id.texteNomModele);
+        nomModele.setText(modeleEnModification.getNomModele());
+        nomModele.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                modeleEnModification.setNomModele(s.toString());
+            }
+        });
+
+        // RecyclerView des pieces
         RecyclerView recyclerView = findViewById(R.id.recyclerViewPieces);
         RecyclerView.Adapter<PieceAdapter.PieceViewHolder> ContactsAdapter = new PieceAdapter(modeleEnModification.getListePieces());
         recyclerView.setAdapter(ContactsAdapter);
