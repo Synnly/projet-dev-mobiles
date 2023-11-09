@@ -57,8 +57,8 @@ public class ModifierModeleActivity extends AppCompatActivity {
 
         // RecyclerView des pieces
         RecyclerView recyclerView = findViewById(R.id.recyclerViewPieces);
-        RecyclerView.Adapter<PieceAdapter.PieceViewHolder> ContactsAdapter = new PieceAdapter(modeleEnModification.getListePieces());
-        recyclerView.setAdapter(ContactsAdapter);
+        RecyclerView.Adapter<PieceAdapter.PieceViewHolder> PiecesAdapter = new PieceAdapter(modeleEnModification.getListePieces());
+        recyclerView.setAdapter(PiecesAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(ModifierModeleActivity.this));
     }
 
