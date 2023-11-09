@@ -1,12 +1,18 @@
 package fernandes_dos_santos_dev_mob.donnees;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import fernandes_dos_santos_dev_mob.exceptions.modele.ExceptionAucunePiece;
-
 import java.util.ArrayList;
 
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "idModele", scope = Modele.class)
 public class Modele {
     private String nomModele;
     private int idModele;
+
+    //@JsonManagedReference(value="modele-pieces")
     private ArrayList<Piece> listePieces;
 
     /**
@@ -41,7 +47,7 @@ public class Modele {
         }
     }
 
-    public String getNom() {
+    public String getNomModele() {
         return nomModele;
     }
 
@@ -69,5 +75,15 @@ public class Modele {
 
     public ArrayList<Piece> getListePieces() {
         return listePieces;
+    }
+
+    public String toJSON(){
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
+        }
+        catch (JsonProcessingException jpe){
+            return "";
+        }
     }
 }

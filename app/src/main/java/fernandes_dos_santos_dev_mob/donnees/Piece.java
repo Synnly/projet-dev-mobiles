@@ -1,12 +1,15 @@
 package fernandes_dos_santos_dev_mob.donnees;
 
 import android.graphics.Rect;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import fernandes_dos_santos_dev_mob.exceptions.piece.ExceptionNombreMursInvalide;
 import fernandes_dos_santos_dev_mob.exceptions.piece.ExceptionPiecesReliesParPlusieursMurs;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, scope = Piece.class)
 public class Piece {
     private String nomPiece;
     private int idPiece;
@@ -36,6 +39,12 @@ public class Piece {
         this.nomPiece = "Piece " + this.idPiece;
         this.listeMurs = new ArrayList<>(4);
         modele.ajouterPiece(this);
+    }
+
+    public Piece(){
+        this.idPiece = FabriqueIDs.getinstance().getIDPiece();
+        this.nomPiece = "Piece " + this.idPiece;
+        this.listeMurs = new ArrayList<>(4);
     }
 
     /**
@@ -103,10 +112,24 @@ public class Piece {
         this.nomPiece = nomPiece;
     }
 
+    /**
+     * Renvoie le modèle de la pièce
+     */
     public Modele getModele() {
         return modele;
     }
 
+    /**
+     * Modifie le modèle de la pièce
+     * @param modele Le modèle de la pièce
+     */
+    public void setModele(Modele modele) {
+        this.modele = modele;
+    }
+
+    /**
+     * Renvoie la liste des murs de la pièce
+     */
     public ArrayList<Mur> getListeMurs() {
         return listeMurs;
     }

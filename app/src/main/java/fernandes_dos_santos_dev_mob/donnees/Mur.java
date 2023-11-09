@@ -2,10 +2,13 @@ package fernandes_dos_santos_dev_mob.donnees;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import fernandes_dos_santos_dev_mob.exceptions.mur.ExceptionPortesSeSuperposent;
 
 import java.util.ArrayList;
 
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "idMur")
 public class Mur {
     public static final int NORD = 0;
     public static final int EST = 1;
@@ -15,9 +18,8 @@ public class Mur {
     private int idMur;
     private int orientation;
     private Bitmap image;
-    private ArrayList<Porte> listePortes;
-
     private Piece piece;
+    private ArrayList<Porte> listePortes;
 
     /**
      * Constructeur d'un mur.

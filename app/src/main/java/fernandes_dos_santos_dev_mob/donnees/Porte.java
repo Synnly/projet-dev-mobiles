@@ -1,11 +1,15 @@
 package fernandes_dos_santos_dev_mob.donnees;
 
 import android.graphics.Rect;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionMursIdentiques;
 import fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionNombreRectangleInvalide;
 import fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionOrientationsIncoherentes;
 import fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionPiecesIdentiques;
 
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "idPorte")
 public class Porte {
     private int idPorte;
     private Mur murA, murB;
@@ -148,5 +152,13 @@ public class Porte {
         if(murA.getPiece() == murB.getPiece()) {
             throw new ExceptionPiecesIdentiques(idPorte);
         }
+    }
+
+    public Rect getRectangleA() {
+        return rectangleA;
+    }
+
+    public Rect getRectangleB() {
+        return rectangleB;
     }
 }
