@@ -79,10 +79,7 @@ public class ModifierModeleActivity extends AppCompatActivity {
      */
     public void nouvellePiece(View view){
         Piece piece = new Piece(modeleEnModification);
-        RecyclerView recyclerView = findViewById(R.id.recyclerViewPieces);
-        RecyclerView.Adapter<PieceAdapter.PieceViewHolder> ContactsAdapter = new PieceAdapter(modeleEnModification.getListePieces());
-        recyclerView.setAdapter(ContactsAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(ModifierModeleActivity.this));
+        creerRecyclerView();
     }
 
     /**
@@ -107,14 +104,15 @@ public class ModifierModeleActivity extends AppCompatActivity {
 
     public void prendrePhotoMur(int indice, int orientation){
         // Demande des permissions
-        if(ContextCompat.checkSelfPermission(ModifierModeleActivity.this, android.Manifest.permission.CAMERA) != getPackageManager().PERMISSION_GRANTED){
+        /*if(ContextCompat.checkSelfPermission(ModifierModeleActivity.this, android.Manifest.permission.CAMERA) != getPackageManager().PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(ModifierModeleActivity.this, new String[]{android.Manifest.permission.CAMERA}, 1);
         }
 
         indicePiecePhoto = indice;
         orientationPhoto = orientation;
 
-        Intent intentPhoto = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        Intent intentPhoto = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);*/
+        Intent intentPhoto = new Intent(ModifierModeleActivity.this, CameraActivity.class);
         startActivityForResult(intentPhoto, 1);
     }
 
