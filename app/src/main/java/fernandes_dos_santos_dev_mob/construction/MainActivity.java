@@ -35,12 +35,12 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Changer d'activité pour aller à l'activité de modification de modèle
-     * @param view la vue
+     * @param indice L'indice du modèle à modifier
      */
-    public void changerActiviteModifierModeleActivity(int position){
-        indiceModele = position;
+    public void changerActiviteModifierModeleActivity(int indice){
+        indiceModele = indice;
         Intent intent = new Intent(this, ModifierModeleActivity.class);
-        intent.putExtra("modele", listeModeles.get(position).toJSON());
+        intent.putExtra("modele", listeModeles.get(indice).toJSON());
         startActivityForResult(intent, 1);
     }
 
@@ -50,13 +50,10 @@ public class MainActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             String modeleJSON = data.getStringExtra("modele");
             try {
-                Log.i("System.out", modeleJSON);
-
                 modele = new ObjectMapper().readValue(modeleJSON, Modele.class); // Conversion du JSON en objet Modele
                 // Modification du modèle
                 listeModeles.remove(indiceModele);
                 listeModeles.add(indiceModele, modele);
-
                 creerRecyclerView();
             }
             catch (JsonProcessingException e) {
@@ -75,6 +72,10 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
     }
 
+    /**
+     * Crée une nouvelle pièce
+     * @param view La vue
+     */
     public void nouvellePiece(View view){
         this.listeModeles.add(new Modele());
         creerRecyclerView();

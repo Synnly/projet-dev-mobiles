@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -26,6 +27,7 @@ public class PieceAdapter extends RecyclerView.Adapter<PieceAdapter.PieceViewHol
     public static class PieceViewHolder extends RecyclerView.ViewHolder {
         private Piece piece;
         private ImageView nord, est, sud, ouest;
+        private Button bouttonNord, bouttonEst, bouttonSud, bouttonOuest;
         private TextView nomPiece;
 
         public PieceViewHolder(View view) {
@@ -35,6 +37,11 @@ public class PieceAdapter extends RecyclerView.Adapter<PieceAdapter.PieceViewHol
             sud = view.findViewById(R.id.imageSud);
             ouest = view.findViewById(R.id.imageOuest);
             nomPiece = view.findViewById(R.id.texteNomPiece);
+
+            bouttonNord = view.findViewById(R.id.boutonPhotoNord);
+            bouttonEst = view.findViewById(R.id.boutonPhotoEst);
+            bouttonSud = view.findViewById(R.id.boutonPhotoSud);
+            bouttonOuest = view.findViewById(R.id.boutonPhotoOuest);
 
             nomPiece.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -50,6 +57,10 @@ public class PieceAdapter extends RecyclerView.Adapter<PieceAdapter.PieceViewHol
                     }
                 }
             });
+            creerEcouteurButton(bouttonNord, Mur.NORD);
+            creerEcouteurButton(bouttonEst, Mur.EST);
+            creerEcouteurButton(bouttonSud, Mur.SUD);
+            creerEcouteurButton(bouttonOuest, Mur.OUEST);
         }
 
         public void setPiece(Piece p){
@@ -74,6 +85,15 @@ public class PieceAdapter extends RecyclerView.Adapter<PieceAdapter.PieceViewHol
 
         public TextView getNomPiece() {
             return nomPiece;
+        }
+
+        public void creerEcouteurButton(View view, int orientation){
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ((ModifierModeleActivity) view.getContext()).prendrePhotoMur(getAdapterPosition(), orientation);
+                }
+            });
         }
     }
 
