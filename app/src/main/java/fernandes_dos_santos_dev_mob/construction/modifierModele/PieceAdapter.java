@@ -1,22 +1,17 @@
-package fernandes_dos_santos_dev_mob.construction;
+package fernandes_dos_santos_dev_mob.construction.modifierModele;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.fernandes_dos_santos_dev_mob.R;
 import fernandes_dos_santos_dev_mob.donnees.Mur;
 import fernandes_dos_santos_dev_mob.donnees.Piece;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 

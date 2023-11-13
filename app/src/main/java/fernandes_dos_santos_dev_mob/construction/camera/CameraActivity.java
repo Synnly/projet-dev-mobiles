@@ -1,11 +1,13 @@
-package fernandes_dos_santos_dev_mob.construction;
+package fernandes_dos_santos_dev_mob.construction.camera;
 
 import android.content.Context;
+import android.hardware.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,55 +20,23 @@ public class CameraActivity extends AppCompatActivity {
     private boolean cameraActif;
     private float [] vecteurAcceleration, vecteurMagnetisme, matriceRotationI, matriceRotationR, vecteurInclinaison, vecteurInclinaisonPrecedent, vecteurOrientation;
     private float orientationPrecedent;
+    private Camera camera;
+    private FrameLayout frameLayout;
+    private VueCamera vueCamera;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
+        initCapteurs();
+
+        //Camera
         cameraActif = true;
-        orientationPrecedent = 0;
-        vecteurInclinaisonPrecedent = new float[]{0, 0, 0};
-        managerCapteurs = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-
-        // Accelerometre
-        accelerometre = managerCapteurs.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        vecteurAcceleration = new float[3];
-
-        // Magnetometre
-        magnetometre = managerCapteurs.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-        vecteurMagnetisme = new float[3];
-        matriceRotationI = new float[9];
-        matriceRotationR = new float[9];
-        vecteurInclinaison = new float[3];
-
-        ecouteurAccelerometre = new SensorEventListener() {
-            @Override
-            public void onSensorChanged(SensorEvent sensorEvent) {
-                vecteurAcceleration = sensorEvent.values;
-            }
-
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int i) {}
-        };
-
-        ecouteurMagnetometre = new SensorEventListener() {
-            @Override
-            public void onSensorChanged(SensorEvent sensorEvent) {
-                vecteurMagnetisme = sensorEvent.values;
-                SensorManager.getRotationMatrix(matriceRotationR, matriceRotationI, vecteurAcceleration, vecteurMagnetisme);
-                calculerVecteurInclinaison();
-                System.out.println(calculerOrientation());
-                ((TextView) findViewById(R.id.cardinal)).setText(getCardinal(calculerOrientation()));
-            }
-
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int i) {}
-        };
-        managerCapteurs.registerListener(ecouteurAccelerometre, accelerometre, 16666);
-        managerCapteurs.registerListener(ecouteurMagnetometre, magnetometre, 16666);
-        ((InclinaisonView) findViewById(R.id.inclinaisonView)).setActiviteCamera(this);
-        ((InclinaisonView) findViewById(R.id.inclinaisonView)).dessiner();
+        frameLayout = findViewById(R.id.frameCamera);
+        camera = Camera.open();
+        vueCamera = new VueCamera(this, camera);
+        frameLayout.addView(vueCamera);
     }
 
     /**
@@ -146,11 +116,59 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     /**
+     * Initialise les capteurs d'inclinaison et d'orientation ainsi que leurs ecouteurs
+     */
+    public void initCapteurs(){
+        orientationPrecedent = 0;
+        vecteurInclinaisonPrecedent = new float[]{0, 0, 0};
+        managerCapteurs = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+
+        // Accelerometre
+        accelerometre = managerCapteurs.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        vecteurAcceleration = new float[3];
+
+        // Magnetometre
+        magnetometre = managerCapteurs.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        vecteurMagnetisme = new float[3];
+        matriceRotationI = new float[9];
+        matriceRotationR = new float[9];
+        vecteurInclinaison = new float[3];
+
+        ecouteurAccelerometre = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent sensorEvent) {
+                vecteurAcceleration = sensorEvent.values;
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int i) {}
+        };
+
+        ecouteurMagnetometre = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent sensorEvent) {
+                vecteurMagnetisme = sensorEvent.values;
+                SensorManager.getRotationMatrix(matriceRotationR, matriceRotationI, vecteurAcceleration, vecteurMagnetisme);
+                calculerVecteurInclinaison();
+                ((TextView) findViewById(R.id.cardinal)).setText(getCardinal(calculerOrientation()));
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int i) {}
+        };
+        managerCapteurs.registerListener(ecouteurAccelerometre, accelerometre, 16666);
+        managerCapteurs.registerListener(ecouteurMagnetometre, magnetometre, 16666);
+        ((InclinaisonView) findViewById(R.id.inclinaisonView)).setActiviteCamera(this);
+        ((InclinaisonView) findViewById(R.id.inclinaisonView)).dessiner();
+    }
+
+    /**
      * Termine l'activité et désactive les capteurs
      * @param view la vue
      */
     public void terminerActivite(View view){
         cameraActif = false;
+        camera.release();
         managerCapteurs.unregisterListener(ecouteurAccelerometre);
         managerCapteurs.unregisterListener(ecouteurMagnetometre);
         finish();

@@ -1,9 +1,7 @@
-package fernandes_dos_santos_dev_mob.construction;
+package fernandes_dos_santos_dev_mob.construction.listeModele;
 
 import android.content.Intent;
-import android.util.Log;
 import android.view.View;
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -11,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.fernandes_dos_santos_dev_mob.R;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fernandes_dos_santos_dev_mob.construction.modifierModele.ModifierModeleActivity;
 import fernandes_dos_santos_dev_mob.donnees.Modele;
 
 import java.util.ArrayList;

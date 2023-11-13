@@ -1,12 +1,12 @@
-package fernandes_dos_santos_dev_mob.construction;
+package fernandes_dos_santos_dev_mob.construction.modifierModele;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.fernandes_dos_santos_dev_mob.R;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fernandes_dos_santos_dev_mob.construction.camera.CameraActivity;
 import fernandes_dos_santos_dev_mob.donnees.Modele;
 import fernandes_dos_santos_dev_mob.donnees.Mur;
 import fernandes_dos_santos_dev_mob.donnees.Piece;
@@ -104,16 +105,19 @@ public class ModifierModeleActivity extends AppCompatActivity {
 
     public void prendrePhotoMur(int indice, int orientation){
         // Demande des permissions
-        /*if(ContextCompat.checkSelfPermission(ModifierModeleActivity.this, android.Manifest.permission.CAMERA) != getPackageManager().PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(ModifierModeleActivity.this, new String[]{android.Manifest.permission.CAMERA}, 1);
+        if(ContextCompat.checkSelfPermission(ModifierModeleActivity.this, android.Manifest.permission.CAMERA) != getPackageManager().PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(ModifierModeleActivity.this, new String[]{android.Manifest.permission.CAMERA}, 100);
         }
-
+        else{
+            Intent intentPhoto = new Intent(ModifierModeleActivity.this, CameraActivity.class);
+            startActivityForResult(intentPhoto, 1);
+        }
+        /*
         indicePiecePhoto = indice;
         orientationPhoto = orientation;
 
         Intent intentPhoto = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);*/
-        Intent intentPhoto = new Intent(ModifierModeleActivity.this, CameraActivity.class);
-        startActivityForResult(intentPhoto, 1);
+
     }
 
     @Override
@@ -127,6 +131,19 @@ public class ModifierModeleActivity extends AppCompatActivity {
             modeleEnModification.getListePieces().get(indicePiecePhoto).ajouterMur(mur);
 
             creerRecyclerView();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
+        if(requestCode == 100){
+            if(grantResults.length > 0 && grantResults[0] == getPackageManager().PERMISSION_GRANTED){
+                Intent intentPhoto = new Intent(ModifierModeleActivity.this, CameraActivity.class);
+                startActivityForResult(intentPhoto, 1);
+            }
+            else{
+                Toast.makeText(ModifierModeleActivity.this, "Autorisation d'accéder à la caméra nécessaire", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

@@ -1,4 +1,4 @@
-package fernandes_dos_santos_dev_mob.construction;
+package fernandes_dos_santos_dev_mob.construction.camera;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 import androidx.annotation.Nullable;
+import fernandes_dos_santos_dev_mob.construction.camera.CameraActivity;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.ExecutorService;
@@ -100,9 +101,6 @@ public class InclinaisonView extends View {
     }
 
     @Override
-    /**
-     * Redimensionne la vue en fonction de la taille de l'ecran
-     */
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int minw = getPaddingLeft() + getPaddingRight() + getSuggestedMinimumWidth();
         int w = resolveSizeAndState(minw, widthMeasureSpec, 1);
