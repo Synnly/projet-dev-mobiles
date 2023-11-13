@@ -6,6 +6,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.view.View;
+import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import com.example.fernandes_dos_santos_dev_mob.R;
@@ -15,13 +16,17 @@ public class CameraActivity extends AppCompatActivity {
     private Sensor accelerometre, magnetometre;
     private SensorEventListener ecouteurAccelerometre, ecouteurMagnetometre;
     private boolean cameraActif;
-    private float [] vecteurAcceleration, vecteurMagnetisme, matriceRotationI, matriceRotationR, vecteurOrientation;
+    private float [] vecteurAcceleration, vecteurMagnetisme, matriceRotationI, matriceRotationR, vecteurInclinaison, vecteurInclinaisonPrecedent, vecteurOrientation;
+    private float orientationPrecedent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
         cameraActif = true;
+        orientationPrecedent = 0;
+        vecteurInclinaisonPrecedent = new float[]{0, 0, 0};
         managerCapteurs = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
         // Accelerometre
@@ -33,7 +38,7 @@ public class CameraActivity extends AppCompatActivity {
         vecteurMagnetisme = new float[3];
         matriceRotationI = new float[9];
         matriceRotationR = new float[9];
-        vecteurOrientation = new float[3];
+        vecteurInclinaison = new float[3];
 
         ecouteurAccelerometre = new SensorEventListener() {
             @Override
@@ -50,15 +55,9 @@ public class CameraActivity extends AppCompatActivity {
             public void onSensorChanged(SensorEvent sensorEvent) {
                 vecteurMagnetisme = sensorEvent.values;
                 SensorManager.getRotationMatrix(matriceRotationR, matriceRotationI, vecteurAcceleration, vecteurMagnetisme);
-                // Rotation de la matrice de rotation pour que l'axe Y traverse l'écran perpendiculairement
-                float matriceRotationRetournee[] = new float[9];
-                SensorManager.remapCoordinateSystem(matriceRotationR, SensorManager.AXIS_X, SensorManager.AXIS_Z, matriceRotationRetournee);
-                SensorManager.getOrientation(matriceRotationRetournee, vecteurOrientation);
-                // Vecteur orientation
-                float vecteurOrientationX = (float) (Math.sin(vecteurOrientation[2]+Math.PI/2)/Math.PI);
-                float vecteurOrientationY = (float) (Math.cos(vecteurOrientation[2]+Math.PI/2)/Math.PI);
-                vecteurOrientation[0] = vecteurOrientationX;
-                vecteurOrientation[1] = vecteurOrientationY;
+                calculerVecteurInclinaison();
+                System.out.println(calculerOrientation());
+                ((TextView) findViewById(R.id.cardinal)).setText(getCardinal(calculerOrientation()));
             }
 
             @Override
@@ -80,8 +79,70 @@ public class CameraActivity extends AppCompatActivity {
     /**
      * Retourne le vecteur d'orientation. [0] = X, [1] = Y
      */
-    public float[] getVecteurOrientation() {
-        return vecteurOrientation;
+    public float[] getVecteurInclinaison() {
+        return vecteurInclinaison;
+    }
+
+    /**
+     * Calcule le vecteur d'inclinaison et le mets dans vecteurInclinaison[]. Le resultat est "lissé" en retournant la moyenne entre l'angle precédent et la mesure actuelle.<br>
+     * /!\ Le système de coordonnées est remappé -> l'axe Y devient l'axe Z
+     */
+    public void calculerVecteurInclinaison(){
+        vecteurInclinaison = new float[3];
+        float matriceRotationRetournee[] = new float[9];
+        float[] temp = new float[2];
+
+        SensorManager.remapCoordinateSystem(matriceRotationR, SensorManager.AXIS_X, SensorManager.AXIS_Z, matriceRotationRetournee);
+        SensorManager.getOrientation(matriceRotationRetournee, vecteurInclinaison);
+
+        temp[0] = (float) (Math.sin(vecteurInclinaison[2]+Math.PI/2)/Math.PI);
+        temp[1] = (float) (Math.cos(vecteurInclinaison[2]+Math.PI/2)/Math.PI);
+
+        vecteurInclinaison[0] = (float) ((Math.sin(vecteurInclinaison[2]+Math.PI/2)/Math.PI) + vecteurInclinaisonPrecedent[0])/2;
+        vecteurInclinaison[1] = (float) ((Math.cos(vecteurInclinaison[2]+Math.PI/2)/Math.PI) + vecteurInclinaisonPrecedent[1])/2;
+
+        vecteurInclinaisonPrecedent[0] = temp[0];
+        vecteurInclinaisonPrecedent[1] = temp[1];
+    }
+
+    /**
+     * Calcule l'orientation en degrés. Le resultat est "lissé" en retournant la moyenne entre l'angle precédent et la mesure actuelle. Le système de coordonnées est remappé pour celui de base
+     * @return L'orientation
+     */
+    public float calculerOrientation(){
+        vecteurOrientation = new float[3];
+        float matriceRotationRetournee[] = new float[9];
+        float temp;
+
+        SensorManager.remapCoordinateSystem(matriceRotationR, SensorManager.AXIS_X, SensorManager.AXIS_Y, matriceRotationRetournee);
+        SensorManager.getOrientation(matriceRotationRetournee, vecteurOrientation);
+        temp = orientationPrecedent;
+
+        orientationPrecedent = (float) Math.round(Math.toDegrees(vecteurOrientation[0]));
+        return (orientationPrecedent+temp)/2;
+    }
+
+    /**
+     * Retourne le cardinal correspondant à l'angle.
+     * @param angle L'angle en degrés
+     * @return L'initiale du cardinal
+     */
+    public String getCardinal(float angle){
+        if(angle >= -45 && angle < 45){
+            return "N";
+        }
+        else if(angle >= 45 && angle < 135){
+            return "E";
+        }
+        else if(angle >= 135 || angle < -135){
+            return "S";
+        }
+        else if(angle >= -135 && angle < -45){
+            return "O";
+        }
+        else{
+            return "N";
+        }
     }
 
     /**
