@@ -1,7 +1,9 @@
 package fernandes_dos_santos_dev_mob.construction.modifierModele;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -25,6 +27,11 @@ import fernandes_dos_santos_dev_mob.construction.camera.CameraActivity;
 import fernandes_dos_santos_dev_mob.donnees.Modele;
 import fernandes_dos_santos_dev_mob.donnees.Mur;
 import fernandes_dos_santos_dev_mob.donnees.Piece;
+
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class ModifierModeleActivity extends AppCompatActivity {
 
@@ -109,27 +116,34 @@ public class ModifierModeleActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(ModifierModeleActivity.this, new String[]{android.Manifest.permission.CAMERA}, 100);
         }
         else{
+            indicePiecePhoto = indice;
+            orientationPhoto = orientation;
+
             Intent intentPhoto = new Intent(ModifierModeleActivity.this, CameraActivity.class);
             startActivityForResult(intentPhoto, 1);
         }
-        /*
-        indicePiecePhoto = indice;
-        orientationPhoto = orientation;
-
-        Intent intentPhoto = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);*/
-
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if(data != null){
-            Bitmap photo = (Bitmap) data.getExtras().get("data");
+        FileInputStream fis;
+        try {
+            fis = openFileInput("bitmap.data");
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        if(fis != null){
+            Bitmap photo = BitmapFactory.decodeStream(fis);
+            System.out.println(photo.getWidth()+ " " + photo.getHeight());
             Mur mur = new Mur(orientationPhoto);
             mur.setImage(photo);
             modeleEnModification.getListePieces().get(indicePiecePhoto).ajouterMur(mur);
-
+            try {
+                fis.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             creerRecyclerView();
         }
     }

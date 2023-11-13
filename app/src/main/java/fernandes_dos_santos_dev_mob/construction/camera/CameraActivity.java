@@ -1,6 +1,9 @@
 package fernandes_dos_santos_dev_mob.construction.camera;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -13,6 +16,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import com.example.fernandes_dos_santos_dev_mob.R;
 
+import java.io.*;
+
 public class CameraActivity extends AppCompatActivity {
     private SensorManager managerCapteurs;
     private Sensor accelerometre, magnetometre;
@@ -23,6 +28,8 @@ public class CameraActivity extends AppCompatActivity {
     private Camera camera;
     private FrameLayout frameLayout;
     private VueCamera vueCamera;
+    private Camera.PictureCallback photoCallBack;
+    private byte[] bytesPhoto;
 
 
     @Override
@@ -37,6 +44,27 @@ public class CameraActivity extends AppCompatActivity {
         camera = Camera.open();
         vueCamera = new VueCamera(this, camera);
         frameLayout.addView(vueCamera);
+
+        photoCallBack = new Camera.PictureCallback() {
+            @Override
+            public void onPictureTaken(byte[] data, Camera camera) {
+                FileOutputStream fos;
+                try {
+                    fos = openFileOutput("bitmap.data", MODE_PRIVATE);
+                    Bitmap bitmapPhoto = BitmapFactory.decodeByteArray(data, 0, data.length);
+                    bitmapPhoto.compress(Bitmap.CompressFormat.JPEG, 30, fos);
+                } catch (FileNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+                try {
+                    fos.flush();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                terminerActivite();
+            }
+        };
     }
 
     /**
@@ -164,13 +192,17 @@ public class CameraActivity extends AppCompatActivity {
 
     /**
      * Termine l'activité et désactive les capteurs
-     * @param view la vue
      */
-    public void terminerActivite(View view){
+    public void terminerActivite(){
         cameraActif = false;
-        camera.release();
         managerCapteurs.unregisterListener(ecouteurAccelerometre);
         managerCapteurs.unregisterListener(ecouteurMagnetometre);
+        Intent intent = new Intent();
+        setResult(RESULT_OK, intent);
         finish();
+    }
+
+    public void prendrePhoto(View view){
+        camera.takePicture(null, null, photoCallBack);
     }
 }
