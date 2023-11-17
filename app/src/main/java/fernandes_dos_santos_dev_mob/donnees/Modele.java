@@ -94,7 +94,7 @@ public class Modele {
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
         }
         catch (JsonProcessingException jpe){
-            return "";
+            throw new RuntimeException(jpe);
         }
     }
 }

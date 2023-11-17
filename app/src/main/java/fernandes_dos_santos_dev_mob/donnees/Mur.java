@@ -1,11 +1,15 @@
 package fernandes_dos_santos_dev_mob.donnees;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import fernandes_dos_santos_dev_mob.exceptions.mur.ExceptionPortesSeSuperposent;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "idMur")
@@ -17,7 +21,7 @@ public class Mur {
 
     private int idMur;
     private int orientation;
-    private Bitmap image;
+    private byte[] binaireImage;
     private Piece piece;
     private ArrayList<Porte> listePortes;
 
@@ -27,7 +31,7 @@ public class Mur {
      */
     public Mur(int orientation) {
         this.idMur = FabriqueIDs.getinstance().getIDMur();
-        this.image = null;
+        this.binaireImage = new byte[0];
         this.listePortes = new ArrayList<>();
         this.piece = null;
 
@@ -46,9 +50,17 @@ public class Mur {
     public Mur(Mur m, Piece p){
         this.idMur = m.idMur;
         this.orientation = m.orientation;
-        this.image = m.image;
+        this.binaireImage = m.binaireImage;
         this.listePortes = new ArrayList<>();
         this.piece = p;
+    }
+
+    public Mur(@JsonProperty("idMur") int id, @JsonProperty("orientation") int orientation, @JsonProperty("binaireImage") byte[] binaireImage, @JsonProperty("piece") Piece piece, @JsonProperty("listePortes") ArrayList<Porte> listePortes) {
+        this.idMur = id;
+        this.orientation = orientation;
+        this.binaireImage = binaireImage;
+        this.piece = piece;
+        this.listePortes = listePortes;
     }
 
     /**
@@ -74,19 +86,36 @@ public class Mur {
     }
 
     /**
-     * Assigne une image au mur
-     *
-     * @param image L'image à assigner
+     * Assigne une image au mur en utilisant le binaire du bitmap
+     * @param binaireImage Le binaire du bitmap à assigner
      */
-    public void setImage(Bitmap image) {
-        this.image = image;
+    public void setBinaireImage(byte[] binaireImage) {
+        this.binaireImage = binaireImage;
     }
 
     /**
-     * Renvoie l'image du mur
+     * Assigne une bitmap au mur en utilisant
+     * @param image Le bitmap à assigner
      */
-    public Bitmap getImage() {
-        return image;
+    public void setBitmap(Bitmap image) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        this.binaireImage = stream.toByteArray();
+    }
+
+    /**
+     * Renvoie le binaire du bitmap du mur
+     */
+    public byte[] getBinaireImage() {
+        return binaireImage;
+    }
+
+    @JsonIgnore
+    /**
+     * Renvoie le bitmap du mur
+     */
+    public Bitmap getImageBitmap(){
+        return BitmapFactory.decodeByteArray(binaireImage, 0, binaireImage.length);
     }
 
     /**

@@ -1,18 +1,20 @@
 package fernandes_dos_santos_dev_mob.construction.modifierModele;
 
-import android.annotation.SuppressLint;
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Environment;
+import android.os.ParcelFileDescriptor;
+import android.provider.DocumentsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -28,28 +30,22 @@ import fernandes_dos_santos_dev_mob.donnees.Modele;
 import fernandes_dos_santos_dev_mob.donnees.Mur;
 import fernandes_dos_santos_dev_mob.donnees.Piece;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
+
+import static com.google.android.material.internal.ContextUtils.getActivity;
 
 public class ModifierModeleActivity extends AppCompatActivity {
 
     private Modele modele, modeleEnModification;
     private int indicePiecePhoto, orientationPhoto;
-    private ActivityResultLauncher<Intent> launcher;
+    private final static int INTENT_PRENDRE_PHOTO = 1;
+    private final static int INTENT_ENREGISTRER_JSON = 2;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modifier_modele);
-        launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>(){
-            @Override
-            public void onActivityResult(ActivityResult result) {
-                Bundle extras = result.getData().getExtras();
-                Bitmap bitmapPhoto = (Bitmap) extras.get("data");
-            }
-        });
 
         // TODO : Reset la fabrique d'ids de pieces au nombre de pieces --> saut d'id (0 -> 5 -> 8 -> 13 au lieu de 0 -> 1 -> 2 ...) qd nouvelle piece cree a cause de de/serialisation du modele en json
 
@@ -104,12 +100,23 @@ public class ModifierModeleActivity extends AppCompatActivity {
      */
     public void valider(View view){
         modele = modeleEnModification;
-        Intent intent = new Intent();
-        intent.putExtra("modele", modele.toJSON());
-        setResult(RESULT_OK, intent);
-        finish();
+        String JSON = modele.toJSON();
+        String path = Environment.getExternalStorageDirectory().getPath()+"/Modeles/"+modele.getNomModele()+".json";
+
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("application/json");
+        intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, path);
+        intent.putExtra(Intent.EXTRA_TITLE, modele.getNomModele()+".json");
+
+        startActivityForResult(intent, INTENT_ENREGISTRER_JSON);
     }
 
+    /**
+     * Lance l'intent de prise de photo pour le mur
+     * @param indice L'indice de la piece dans laquelle se trouve le mur
+     * @param orientation L'orientation du mur
+     */
     public void prendrePhotoMur(int indice, int orientation){
         // Demande des permissions
         if(ContextCompat.checkSelfPermission(ModifierModeleActivity.this, android.Manifest.permission.CAMERA) != getPackageManager().PERMISSION_GRANTED){
@@ -120,31 +127,26 @@ public class ModifierModeleActivity extends AppCompatActivity {
             orientationPhoto = orientation;
 
             Intent intentPhoto = new Intent(ModifierModeleActivity.this, CameraActivity.class);
-            startActivityForResult(intentPhoto, 1);
+            startActivityForResult(intentPhoto, INTENT_PRENDRE_PHOTO);
         }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        FileInputStream fis;
-        try {
-            fis = openFileInput("bitmap.data");
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        if(fis != null){
-            Bitmap photo = BitmapFactory.decodeStream(fis);
-            System.out.println(photo.getWidth()+ " " + photo.getHeight());
-            Mur mur = new Mur(orientationPhoto);
-            mur.setImage(photo);
-            modeleEnModification.getListePieces().get(indicePiecePhoto).ajouterMur(mur);
-            try {
-                fis.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            creerRecyclerView();
+        switch (requestCode){
+            case INTENT_PRENDRE_PHOTO:
+                if(resultCode == RESULT_OK) { // Si une photo a été prise
+                    ouvrirPhoto();
+                }
+                break;
+
+            case INTENT_ENREGISTRER_JSON:
+                if(resultCode == RESULT_OK){
+                    ecrireJSON(data.getData(), modele.toJSON());
+                    terminerActivite(RESULT_OK, null);
+                }
+                break;
         }
     }
 
@@ -161,11 +163,76 @@ public class ModifierModeleActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Crée le RecyclerView des pièces
+     */
     public void creerRecyclerView(){
-        // RecyclerView des pieces
         RecyclerView recyclerView = findViewById(R.id.recyclerViewPieces);
         RecyclerView.Adapter<PieceAdapter.PieceViewHolder> PiecesAdapter = new PieceAdapter(modeleEnModification.getListePieces());
         recyclerView.setAdapter(PiecesAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(ModifierModeleActivity.this));
+    }
+
+    /**
+     * Ouvre la photo dans le fichier bitmap.data et l'ajoute au mur d'orientation orientationPhoto de la pièce d'indice indicePiecePhoto
+     */
+    public void ouvrirPhoto() {
+        // Ouverture du fichier
+        FileInputStream fis;
+        try {
+            fis = openFileInput("bitmap.data");
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        if (fis != null) {
+            // Conversion en bitmap
+            Bitmap photo = BitmapFactory.decodeStream(fis);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            photo.compress(Bitmap.CompressFormat.PNG, 100, stream);
+
+            // Ajout de la photo au mur
+            byte[] binaireImage = stream.toByteArray();
+            Mur mur = new Mur(orientationPhoto);
+            mur.setBinaireImage(binaireImage);
+            modeleEnModification.getListePieces().get(indicePiecePhoto).ajouterMur(mur);
+
+            // Fermeture du fichier
+            try {
+                fis.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            // Mise à jour du RecyclerView
+            creerRecyclerView();
+        }
+    }
+
+    /**
+     * Ecrit le JSON dans le fichier à l'URI
+     * @param uri L'URI du fichier
+     * @param json Le JSON à écrire
+     */
+    public void ecrireJSON(Uri uri, String json){
+        Log.i("info", json);
+        try {
+            ParcelFileDescriptor pdf = getActivity(this).getContentResolver().openFileDescriptor(uri, "w");
+            FileOutputStream fos = new FileOutputStream(pdf.getFileDescriptor());
+            fos.write(json.getBytes());
+            fos.close();
+            pdf.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void terminerActivite(int resultCode, Intent data){
+        if(data == null){
+            setResult(resultCode);
+        }
+        else {
+            setResult(resultCode, data);
+        }
+        finish();
     }
 }

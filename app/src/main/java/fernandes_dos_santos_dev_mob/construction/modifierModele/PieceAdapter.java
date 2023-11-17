@@ -107,16 +107,16 @@ public class PieceAdapter extends RecyclerView.Adapter<PieceAdapter.PieceViewHol
         holder.getNomPiece().setText(listePieces.get(position).getNomPiece());
         holder.setPiece(listePieces.get(position));
         if(listePieces.get(position).getMur(Mur.NORD) != null){
-            holder.getNord().setImageBitmap(listePieces.get(position).getMur(Mur.NORD).getImage());
+            holder.getNord().setImageBitmap(listePieces.get(position).getMur(Mur.NORD).getImageBitmap());
         }
         if(listePieces.get(position).getMur(Mur.EST) != null){
-            holder.getEst().setImageBitmap(listePieces.get(position).getMur(Mur.EST).getImage());
+            holder.getEst().setImageBitmap(listePieces.get(position).getMur(Mur.EST).getImageBitmap());
         }
         if(listePieces.get(position).getMur(Mur.SUD) != null){
-            holder.getSud().setImageBitmap(listePieces.get(position).getMur(Mur.SUD).getImage());
+            holder.getSud().setImageBitmap(listePieces.get(position).getMur(Mur.SUD).getImageBitmap());
         }
         if(listePieces.get(position).getMur(Mur.OUEST) != null){
-            holder.getOuest().setImageBitmap(listePieces.get(position).getMur(Mur.OUEST).getImage());
+            holder.getOuest().setImageBitmap(listePieces.get(position).getMur(Mur.OUEST).getImageBitmap());
         }
     }
 

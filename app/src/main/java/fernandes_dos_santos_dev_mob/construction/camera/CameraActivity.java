@@ -2,8 +2,7 @@ package fernandes_dos_santos_dev_mob.construction.camera;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.*;
 import android.hardware.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -29,8 +28,6 @@ public class CameraActivity extends AppCompatActivity {
     private FrameLayout frameLayout;
     private VueCamera vueCamera;
     private Camera.PictureCallback photoCallBack;
-    private byte[] bytesPhoto;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,18 +48,13 @@ public class CameraActivity extends AppCompatActivity {
                 FileOutputStream fos;
                 try {
                     fos = openFileOutput("bitmap.data", MODE_PRIVATE);
-                    Bitmap bitmapPhoto = BitmapFactory.decodeByteArray(data, 0, data.length);
-                    bitmapPhoto.compress(Bitmap.CompressFormat.JPEG, 30, fos);
-                } catch (FileNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-                try {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 30, fos);
                     fos.flush();
+                    terminerActivite(RESULT_OK);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-
-                terminerActivite();
             }
         };
     }
@@ -193,12 +185,12 @@ public class CameraActivity extends AppCompatActivity {
     /**
      * Termine l'activité et désactive les capteurs
      */
-    public void terminerActivite(){
+    public void terminerActivite(int resultCode){
         cameraActif = false;
         managerCapteurs.unregisterListener(ecouteurAccelerometre);
         managerCapteurs.unregisterListener(ecouteurMagnetometre);
         Intent intent = new Intent();
-        setResult(RESULT_OK, intent);
+        setResult(resultCode, intent);
         finish();
     }
 
