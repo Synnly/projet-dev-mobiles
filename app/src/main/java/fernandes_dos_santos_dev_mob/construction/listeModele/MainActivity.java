@@ -1,22 +1,20 @@
 package fernandes_dos_santos_dev_mob.construction.listeModele;
 
-import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.fernandes_dos_santos_dev_mob.R;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fernandes_dos_santos_dev_mob.construction.camera.CameraActivity;
 import fernandes_dos_santos_dev_mob.construction.modifierModele.ModifierModeleActivity;
 import fernandes_dos_santos_dev_mob.donnees.Modele;
-
+import java.io.*;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Modele> listeModeles;
     private RecyclerView recyclerView;
     private int indiceModele;
+    private ArrayList<Uri> cheminsModeles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         listeModeles = new ArrayList<>();
+        cheminsModeles = new ArrayList<>();
 
         // RecyclerView des modeles
         creerRecyclerView();
@@ -52,21 +52,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        /*if (resultCode == RESULT_OK) {
-            String modeleJSON = data.getStringExtra("modele");
-            try {
-                System.out.println(modeleJSON==null?"null":"not null");
-                System.out.println(modeleJSON+"---------------");
-                modele = new ObjectMapper().readValue(modeleJSON, Modele.class); // Conversion du JSON en objet Modele
-                // Modification du modèle
-                listeModeles.remove(indiceModele);
-                listeModeles.add(indiceModele, modele);
-                creerRecyclerView();
-            }
-            catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        }*/
+
+        if(resultCode == RESULT_OK) {
+            Uri path = data.getParcelableExtra("path");
+            cheminsModeles.set(indiceModele, path);
+            enregistrerChemins();
+            chargerChemins();
+            chargerModeles();
+            creerRecyclerView();
+        }
     }
 
     /**
@@ -85,7 +79,81 @@ public class MainActivity extends AppCompatActivity {
      */
     public void nouvellePiece(View view){
         this.listeModeles.add(new Modele());
+        this.cheminsModeles.add(null);
         creerRecyclerView();
+    }
+
+    public void enregistrerChemins(){
+        try {
+            OutputStreamWriter osw = new OutputStreamWriter(this.openFileOutput("chemins.txt", Context.MODE_PRIVATE));
+            osw.write(cheminsString());
+            osw.close();
+        }
+        catch (IOException ignored){}
+    }
+
+    public void chargerChemins() {
+        ArrayList<Uri> chemins = new ArrayList<>();
+        try {
+            InputStream is = this.openFileInput("chemins.txt");
+
+            if (is != null) {
+                InputStreamReader isr = new InputStreamReader(is);
+                BufferedReader br = new BufferedReader(isr);
+                String buffer = "";
+
+                while ((buffer = br.readLine()) != null) {
+                    chemins.add(Uri.parse(buffer));
+                }
+
+                is.close();
+                cheminsModeles = chemins;
+            }
+        }
+        catch (FileNotFoundException e) {
+            Toast.makeText(this, "Certains modèles sont introuvables", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            Toast.makeText(this, "Erreur lors de la lecture des modèles", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void chargerModeles(){
+        ArrayList<Modele> modeles = new ArrayList<>();
+        for(Uri uri : cheminsModeles){
+            try {
+                InputStream is = getContentResolver().openInputStream(uri);
+
+                if (is != null) {
+                    InputStreamReader isr = new InputStreamReader(is);
+                    BufferedReader br = new BufferedReader(isr);
+                    String buffer = "";
+                    StringBuilder builder = new StringBuilder();
+
+                    while ((buffer = br.readLine()) != null) {
+                        builder.append(buffer);
+                    }
+
+                    is.close();
+                    modeles.add(new ObjectMapper().readValue(builder.toString(), Modele.class));
+                }
+            }
+            catch (FileNotFoundException e) {
+                Toast.makeText(this, "Certains modèles sont introuvables", Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                Toast.makeText(this, "Erreur lors de la lecture des modèles", Toast.LENGTH_SHORT).show();
+            }
+
+            listeModeles = modeles;
+        }
+    }
+
+    public String cheminsString(){
+        StringBuilder chemins = new StringBuilder();
+        for(Uri chemin : cheminsModeles){
+            chemins.append(chemin.toString());
+            chemins.append("\n");
+        }
+        return chemins.toString();
     }
 
 }

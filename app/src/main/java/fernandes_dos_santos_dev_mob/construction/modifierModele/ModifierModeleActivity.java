@@ -144,7 +144,9 @@ public class ModifierModeleActivity extends AppCompatActivity {
             case INTENT_ENREGISTRER_JSON:
                 if(resultCode == RESULT_OK){
                     ecrireJSON(data.getData(), modele.toJSON());
-                    terminerActivite(RESULT_OK, null);
+                    Intent intent = new Intent();
+                    intent.putExtra("path", data.getData());
+                    terminerActivite(RESULT_OK, intent);
                 }
                 break;
         }

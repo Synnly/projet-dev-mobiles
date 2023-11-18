@@ -2,6 +2,7 @@ package fernandes_dos_santos_dev_mob.construction.camera;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -27,6 +28,10 @@ public class VueCamera extends SurfaceView implements SurfaceHolder.Callback {
         if(this.getResources().getConfiguration().orientation != Configuration.ORIENTATION_PORTRAIT) {
             parametres.set("orientation", "portrait");
         }
+
+        parametres.setPictureFormat(ImageFormat.JPEG);
+        parametres.setPictureSize(1600, 1200);
+        parametres.setPreviewSize(640, 480);
         parametres.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
         camera.setDisplayOrientation(90);
         parametres.setRotation(90);
