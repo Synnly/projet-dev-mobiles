@@ -1,17 +1,14 @@
 package fernandes_dos_santos_dev_mob.construction.modifierModele;
 
-import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
-import android.os.ParcelFileDescriptor;
 import android.provider.DocumentsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -23,23 +20,21 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.fernandes_dos_santos_dev_mob.R;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fernandes_dos_santos_dev_mob.construction.camera.CameraActivity;
+import fernandes_dos_santos_dev_mob.donnees.FabriqueIDs;
 import fernandes_dos_santos_dev_mob.donnees.Modele;
 import fernandes_dos_santos_dev_mob.donnees.Mur;
 import fernandes_dos_santos_dev_mob.donnees.Piece;
 
 import java.io.*;
 
-import static com.google.android.material.internal.ContextUtils.getActivity;
-
 public class ModifierModeleActivity extends AppCompatActivity {
 
     private Modele modele, modeleEnModification;
     private int indicePiecePhoto, orientationPhoto;
+    private String path;
     private final static int INTENT_PRENDRE_PHOTO = 1;
-    private final static int INTENT_ENREGISTRER_JSON = 2;
 
 
     @Override
@@ -47,20 +42,21 @@ public class ModifierModeleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modifier_modele);
 
-        // TODO : Reset la fabrique d'ids de pieces au nombre de pieces --> saut d'id (0 -> 5 -> 8 -> 13 au lieu de 0 -> 1 -> 2 ...) qd nouvelle piece cree a cause de de/serialisation du modele en json
-
-        String modeleJSON = getIntent().getStringExtra("modele");
-        try {
-            modele = new ObjectMapper().readValue(modeleJSON, Modele.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+        // Récupération du modèle
+        path = getIntent().getStringExtra("path");
+        if (path != null) {
+            chargerModele();
+        }
+        else {
+            modele = new Modele();
+            path = modele.getNomModele()+".json";
         }
 
         modeleEnModification = new Modele(modele);
 
         // Nom du modele
         EditText nomModele = findViewById(R.id.texteNomModele);
-        nomModele.setText(modeleEnModification.getNomModele());
+        nomModele.setText(modele.getNomModele());
         nomModele.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -77,60 +73,6 @@ public class ModifierModeleActivity extends AppCompatActivity {
         creerRecyclerView();
     }
 
-    /**
-     * Ajoute une nouvelle pièce au modèle
-     * @param view la vue
-     */
-    public void nouvellePiece(View view){
-        Piece piece = new Piece(modeleEnModification);
-        creerRecyclerView();
-    }
-
-    /**
-     * Annule les modifications du modèle et retourne à l'activité précédente
-     */
-    public void annuler(View view){
-        setResult(RESULT_CANCELED);
-        finish();
-    }
-
-    /**
-     * Valide les modifications du modèle et retourne à l'activité précédente
-     * @param view la vue
-     */
-    public void valider(View view){
-        modele = modeleEnModification;
-        String JSON = modele.toJSON();
-        String path = Environment.getExternalStorageDirectory().getPath()+"/Modeles/"+modele.getNomModele()+".json";
-
-        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("application/json");
-        intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, path);
-        intent.putExtra(Intent.EXTRA_TITLE, modele.getNomModele()+".json");
-
-        startActivityForResult(intent, INTENT_ENREGISTRER_JSON);
-    }
-
-    /**
-     * Lance l'intent de prise de photo pour le mur
-     * @param indice L'indice de la piece dans laquelle se trouve le mur
-     * @param orientation L'orientation du mur
-     */
-    public void prendrePhotoMur(int indice, int orientation){
-        // Demande des permissions
-        if(ContextCompat.checkSelfPermission(ModifierModeleActivity.this, android.Manifest.permission.CAMERA) != getPackageManager().PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(ModifierModeleActivity.this, new String[]{android.Manifest.permission.CAMERA}, 100);
-        }
-        else{
-            indicePiecePhoto = indice;
-            orientationPhoto = orientation;
-
-            Intent intentPhoto = new Intent(ModifierModeleActivity.this, CameraActivity.class);
-            startActivityForResult(intentPhoto, INTENT_PRENDRE_PHOTO);
-        }
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -138,15 +80,6 @@ public class ModifierModeleActivity extends AppCompatActivity {
             case INTENT_PRENDRE_PHOTO:
                 if(resultCode == RESULT_OK) { // Si une photo a été prise
                     ouvrirPhoto();
-                }
-                break;
-
-            case INTENT_ENREGISTRER_JSON:
-                if(resultCode == RESULT_OK){
-                    ecrireJSON(data.getData(), modele.toJSON());
-                    Intent intent = new Intent();
-                    intent.putExtra("path", data.getData());
-                    terminerActivite(RESULT_OK, intent);
                 }
                 break;
         }
@@ -166,17 +99,28 @@ public class ModifierModeleActivity extends AppCompatActivity {
     }
 
     /**
-     * Crée le RecyclerView des pièces
+     * Crée le RecyclerView des pièces. Reinitalise le compteur d'ids de pièces
      */
     public void creerRecyclerView(){
         RecyclerView recyclerView = findViewById(R.id.recyclerViewPieces);
         RecyclerView.Adapter<PieceAdapter.PieceViewHolder> PiecesAdapter = new PieceAdapter(modeleEnModification.getListePieces());
         recyclerView.setAdapter(PiecesAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(ModifierModeleActivity.this));
+
+        FabriqueIDs.getinstance().initIDPiece(modeleEnModification.getListePieces().size());
     }
 
     /**
-     * Ouvre la photo dans le fichier bitmap.data et l'ajoute au mur d'orientation orientationPhoto de la pièce d'indice indicePiecePhoto
+     * Ajoute une nouvelle pièce au modèle
+     * @param view la vue
+     */
+    public void nouvellePiece(View view){
+        Piece piece = new Piece(modeleEnModification);
+        creerRecyclerView();
+    }
+
+    /**
+     * Ouvre la photo dans le fichier bitmap.data et l'ajoute au mur d'orientation orientationPhoto de la pièce d'indice indicePiecePhoto. Met à jour le RecyclerView
      */
     public void ouvrirPhoto() {
         // Ouverture du fichier
@@ -211,23 +155,62 @@ public class ModifierModeleActivity extends AppCompatActivity {
     }
 
     /**
-     * Ecrit le JSON dans le fichier à l'URI
-     * @param uri L'URI du fichier
-     * @param json Le JSON à écrire
+     * Lance l'intent de prise de photo pour le mur
+     * @param indice L'indice de la piece dans laquelle se trouve le mur
+     * @param orientation L'orientation du mur
      */
-    public void ecrireJSON(Uri uri, String json){
-        Log.i("info", json);
+    public void prendrePhotoMur(int indice, int orientation){
+        // Demande des permissions
+        if(ContextCompat.checkSelfPermission(ModifierModeleActivity.this, android.Manifest.permission.CAMERA) != getPackageManager().PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(ModifierModeleActivity.this, new String[]{android.Manifest.permission.CAMERA}, 100);
+        }
+        else{
+            indicePiecePhoto = indice;
+            orientationPhoto = orientation;
+
+            Intent intentPhoto = new Intent(ModifierModeleActivity.this, CameraActivity.class);
+            startActivityForResult(intentPhoto, INTENT_PRENDRE_PHOTO);
+        }
+    }
+
+    /**
+     * Ecrit le JSON dans le fichier nomModele.json dans le stockage privé de l'application
+     */
+    public void ecrireJSON(){
         try {
-            ParcelFileDescriptor pdf = getActivity(this).getContentResolver().openFileDescriptor(uri, "w");
-            FileOutputStream fos = new FileOutputStream(pdf.getFileDescriptor());
-            fos.write(json.getBytes());
-            fos.close();
-            pdf.close();
+            OutputStreamWriter osw = new OutputStreamWriter(this.openFileOutput(path, Context.MODE_PRIVATE));
+            osw.write(modele.toJSON());
+            osw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Annule les modifications du modèle et retourne à l'activité précédente
+     */
+    public void annuler(View view){
+        setResult(RESULT_CANCELED);
+        finish();
+    }
+
+    /**
+     * Valide les modifications du modèle et retourne à l'activité précédente
+     * @param view la vue
+     */
+    public void valider(View view){
+        modele = modeleEnModification;
+        ecrireJSON();
+        Intent intent = new Intent();
+        intent.putExtra("path", path);
+        terminerActivite(RESULT_OK, intent);
+    }
+
+    /**
+     * Termine l'activité en envoyant un intent avec le code de retour et les données
+     * @param resultCode Le code de retour
+     * @param data Les données. Peut être null
+     */
     public void terminerActivite(int resultCode, Intent data){
         if(data == null){
             setResult(resultCode);
@@ -237,4 +220,37 @@ public class ModifierModeleActivity extends AppCompatActivity {
         }
         finish();
     }
+
+    /**
+     * Charge le modele de chemin path et le stocke dans la variable modele.<br> Affiche un toast si le modele est introuvable ou si une erreur survient lors de la lecture du fichier
+     */
+    public void chargerModele(){
+            try {
+                // Ouverture du fichier
+                InputStream is = this.openFileInput(path);
+
+                if (is != null) {
+                    InputStreamReader isr = new InputStreamReader(is);
+                    BufferedReader br = new BufferedReader(isr);
+                    String buffer = "";
+                    StringBuilder builder = new StringBuilder();
+
+                    // Lecture du fichier
+                    while ((buffer = br.readLine()) != null) {
+                        builder.append(buffer);
+                    }
+
+                    is.close();
+                    isr.close();
+
+                    // Creation du modele
+                    modele = new ObjectMapper().readValue(builder.toString(), Modele.class);
+                }
+            }
+            catch (FileNotFoundException e) {
+                Toast.makeText(this, "Le modele est introuvable", Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                Toast.makeText(this, "Erreur lors de la lecture du modèle", Toast.LENGTH_SHORT).show();
+            }
+        }
 }

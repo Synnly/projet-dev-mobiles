@@ -28,7 +28,7 @@
             android:id="@+id/buttonAjouterModele" android:text="Nouveau modèle"
             app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"
             android:padding="5dp" android:layout_marginEnd="32dp" android:layout_marginBottom="32dp"
-            android:background="@drawable/border_radius_small_blue" android:onClick="nouvellePiece"/>
+            android:background="@drawable/border_radius_small_blue" android:onClick="nouveauModele"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

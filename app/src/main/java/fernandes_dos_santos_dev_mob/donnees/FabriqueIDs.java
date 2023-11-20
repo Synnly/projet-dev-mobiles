@@ -28,4 +28,28 @@ public class FabriqueIDs {
      * Renvoie un id pour une porte
      */
     public int getIDPorte() {return idPorte++;}
+
+    /**
+     * Initialise l'id de départ pour les modeles
+     * @param id L'id de départ
+     */
+    public void initIDModele(int id) {idModele = id;}
+
+    /**
+     * Initialise l'id de départ pour les pieces
+     * @param id L'id de départ
+     */
+    public void initIDPiece(int id) {idPiece = id;}
+
+    /**
+     * Initialise l'id de départ pour les murs
+     * @param id L'id de départ
+     */
+    public void initIDMur(int id) {idMur = id;}
+
+    /**
+     * Initialise l'id de départ pour les portes
+     * @param id L'id de départ
+     */
+    public void initIDPorte(int id) {idPorte = id;}
 }
