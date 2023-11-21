@@ -1,6 +1,12 @@
 package fernandes_dos_santos_dev_mob.construction.modifierAcces;
 
+import android.graphics.*;
 import android.graphics.drawable.BitmapDrawable;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +31,11 @@ public class ModifierAccesActivity extends AppCompatActivity {
     private ArrayList<Porte> listePortes;
     private RecyclerView recyclerView;
     private String path;
+    private boolean appuieSurEcran = false;
+    private int pointeur1X, pointeur1Y, pointeur2X, pointeur2Y, nbContacts;
+    private Rect rectangle;
+    private ImageView imageView;
+    private Paint peinture;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +63,29 @@ public class ModifierAccesActivity extends AppCompatActivity {
         BitmapDrawable image = new BitmapDrawable(getResources(), mur.getImageBitmap());
         ((ImageView) findViewById(R.id.imageMur)).setImageDrawable(image);
 
+        // Initialisation des variables
+        SurfaceView surfaceDessin = findViewById(R.id.rectangleSelection);
+        SurfaceHolder surfaceHolderDessin = surfaceDessin.getHolder();
+
+        // Preparation du holder
+        surfaceDessin.setZOrderOnTop(true);
+        surfaceDessin.getHolder().setFormat(PixelFormat.TRANSPARENT);
+
+        // Peinture
+        peinture = new Paint(Paint.ANTI_ALIAS_FLAG);
+        peinture.setColor(Color.argb(64, 0, 128, 255));
+        peinture.setStrokeWidth(5);
+        peinture.setStyle(Paint.Style.FILL_AND_STROKE);
+
+        imageView = findViewById(R.id.imageMur);
+        imageView.setOnTouchListener(creerEcouteur(surfaceDessin, surfaceHolderDessin, peinture));
+
         creerRecyclerView();
     }
 
+    /**
+     * Cree le RecyclerView et l'initialise avec la liste de portes
+     */
     public void creerRecyclerView() {
         recyclerView = findViewById(R.id.recyclerViewAcces);
         RecyclerView.Adapter<AccesAdapter.AccesViewHolder> accesAdapter = new AccesAdapter(listePortes, modele.getListePieces());
@@ -92,6 +123,108 @@ public class ModifierAccesActivity extends AppCompatActivity {
             Toast.makeText(this, "Le modele est introuvable", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
             Toast.makeText(this, "Erreur lors de la lecture du modèle", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * Crée un ecouteur pour le toucher de l'image. Dessine un rectangle en fonction des coordonnees des pointeurs. Les coordonnees sont limitees par la taille de la surface de dessin
+     * @param surfaceDessin La surface de dessin
+     * @param surfaceHolderDessin Le holder de la surface de dessin
+     * @param peinture La peinture
+     * @return
+     */
+    public View.OnTouchListener creerEcouteur(SurfaceView surfaceDessin, SurfaceHolder surfaceHolderDessin, Paint peinture){
+        return new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                // Memorisation du type d'evenement
+                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                    appuieSurEcran = true;
+                }
+                else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    appuieSurEcran = false;
+                }
+
+                if(appuieSurEcran) {
+                    if (event.getPointerCount() == 2) {
+                        nbContacts = event.getPointerCount();
+                        rectangle = creerRectangle(event, surfaceDessin);
+                        rectangle.sort();
+                        clearCanvasAndDrawRectangle(rectangle, surfaceHolderDessin);
+                    }
+                }
+                else {
+                    clearCanvas(surfaceHolderDessin);
+
+                    if (nbContacts == 2) {
+                        if (pointeur1X - pointeur2X == 0 || pointeur1Y - pointeur2Y == 0) {
+                            Toast.makeText(ModifierAccesActivity.this, "La zone d'acces est invalide.", Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            // Creation du rectangle. Pointeurs forcément initialisés dans le bloc if parent
+                            rectangle = new Rect(pointeur1X, pointeur1Y, pointeur2X, pointeur2Y);
+                            rectangle.sort();
+
+                            Porte porte = new Porte(mur, rectangle);
+                            clearCanvas(surfaceHolderDessin);
+                            creerRecyclerView();
+                        }
+                    }
+                }
+                return true;
+            }
+        };
+    }
+
+    /**
+     * Cree un rectangle en fonction des coordonnees des pointeurs. Les coordonnees sont limitees par la taille de la surface de dessin
+     * @param event L'evenement
+     * @param surfaceDessin La surface de dessin
+     * @return Le rectangle
+     */
+    public Rect creerRectangle(MotionEvent event, SurfaceView surfaceDessin){
+        pointeur1X = Math.max(Math.min((int) event.getX(0), surfaceDessin.getWidth()), 0);
+        pointeur1Y = Math.max(Math.min((int) event.getY(0), surfaceDessin.getHeight()), 0);
+        pointeur2X = Math.max(Math.min((int) event.getX(1), surfaceDessin.getWidth()), 0);
+        pointeur2Y = Math.max(Math.min((int) event.getY(1), surfaceDessin.getHeight()), 0);
+
+        return new Rect(pointeur1X, pointeur1Y, pointeur2X, pointeur2Y);
+    }
+
+    /**
+     * Nettoie le canvas de la surface de dessin
+     * @param surfaceHolderDessin Le holder de la surface de dessin
+     */
+    public void clearCanvas(SurfaceHolder surfaceHolderDessin){
+        Canvas c = surfaceHolderDessin.lockCanvas();
+        c.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+        dessinerAcces(c, listePortes, surfaceHolderDessin);
+        surfaceHolderDessin.unlockCanvasAndPost(c);
+    }
+
+    /**
+     * Nettoie le canvas de la surface de dessin et dessine le rectangle
+     * @param rectangle Le rectangle
+     * @param surfaceHolderDessin Le holder de la surface de dessin
+     */
+    public void clearCanvasAndDrawRectangle(Rect rectangle, SurfaceHolder surfaceHolderDessin){
+        Canvas c = surfaceHolderDessin.lockCanvas();
+        c.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+        dessinerAcces(c, listePortes, surfaceHolderDessin);
+        c.drawRect(rectangle, peinture);
+        surfaceHolderDessin.unlockCanvasAndPost(c);
+    }
+
+    /**
+     * Dessine les zones d'acces sur la surface de dessin. <br>Nécessite que le surfaceHolderDessin soit verrouillé avant l'appel de la fonction et déverrouillé après.
+     * @param listePortes La liste des portes
+     * @param surfaceHolderDessin Le holder de la surface de dessin
+     */
+    public void dessinerAcces(Canvas c, ArrayList<Porte> listePortes, SurfaceHolder surfaceHolderDessin){
+        c.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+        for(Porte porte : listePortes){
+            c.drawRect(porte.getRectangle(mur), peinture);
         }
     }
 }
