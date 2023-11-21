@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.fernandes_dos_santos_dev_mob.R;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fernandes_dos_santos_dev_mob.construction.Utils.FilesUtils;
 import fernandes_dos_santos_dev_mob.donnees.Modele;
 import fernandes_dos_santos_dev_mob.donnees.Mur;
 import fernandes_dos_santos_dev_mob.donnees.Piece;
@@ -42,7 +43,11 @@ public class ModifierAccesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modifier_acces);
         path = getIntent().getStringExtra("path");
-        chargerModele();
+        try {
+            modele = FilesUtils.chargerModele(this, path);
+        } catch (IOException e) {
+            Toast.makeText(this, "Erreur lors de la lecture du modèle", Toast.LENGTH_SHORT).show();
+        }
         int idPiece = getIntent().getIntExtra("idPiece", 0);
         int orientation = getIntent().getIntExtra("orientation", 0);
 
@@ -91,39 +96,6 @@ public class ModifierAccesActivity extends AppCompatActivity {
         RecyclerView.Adapter<AccesAdapter.AccesViewHolder> accesAdapter = new AccesAdapter(listePortes, modele.getListePieces());
         recyclerView.setAdapter(accesAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(ModifierAccesActivity.this));
-    }
-
-    /**
-     * Charge le modele de chemin path et le stocke dans la variable modele.<br> Affiche un toast si le modele est introuvable ou si une erreur survient lors de la lecture du fichier
-     */
-    public void chargerModele(){
-        try {
-            // Ouverture du fichier
-            InputStream is = this.openFileInput(path);
-
-            if (is != null) {
-                InputStreamReader isr = new InputStreamReader(is);
-                BufferedReader br = new BufferedReader(isr);
-                String buffer = "";
-                StringBuilder builder = new StringBuilder();
-
-                // Lecture du fichier
-                while ((buffer = br.readLine()) != null) {
-                    builder.append(buffer);
-                }
-
-                is.close();
-                isr.close();
-
-                // Creation du modele
-                modele = new ObjectMapper().readValue(builder.toString(), Modele.class);
-            }
-        }
-        catch (FileNotFoundException e) {
-            Toast.makeText(this, "Le modele est introuvable", Toast.LENGTH_SHORT).show();
-        } catch (IOException e) {
-            Toast.makeText(this, "Erreur lors de la lecture du modèle", Toast.LENGTH_SHORT).show();
-        }
     }
 
     /**

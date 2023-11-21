@@ -2,6 +2,7 @@ package fernandes_dos_santos_dev_mob.construction.listeModele;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.FileUtils;
 import android.view.View;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.fernandes_dos_santos_dev_mob.R;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fernandes_dos_santos_dev_mob.construction.Utils.FilesUtils;
 import fernandes_dos_santos_dev_mob.construction.modifierModele.ModifierModeleActivity;
 import fernandes_dos_santos_dev_mob.donnees.FabriqueIDs;
 import fernandes_dos_santos_dev_mob.donnees.Modele;
@@ -32,7 +34,11 @@ public class MainActivity extends AppCompatActivity {
         listeModeles = new ArrayList<>();
         cheminsModeles = new ArrayList<>();
         if(new File(this.getFilesDir(), "chemins.txt").exists()){
-            chargerChemins();
+            try {
+                cheminsModeles = FilesUtils.chargerChemins(this, "chemins.txt");
+            } catch (IOException e) {
+                Toast.makeText(this, "Erreur lors de la lecture des chemins", Toast.LENGTH_SHORT).show();
+            }
             chargerModeles();
         }
 
@@ -59,7 +65,11 @@ public class MainActivity extends AppCompatActivity {
         if(resultCode == RESULT_OK) {
             cheminsModeles.set(indiceModele, data.getStringExtra("path"));
             enregistrerChemins();
-            chargerChemins();
+            try {
+                cheminsModeles = FilesUtils.chargerChemins(this, "chemins.txt");
+            } catch (IOException e) {
+                Toast.makeText(this, "Erreur lors de la lecture des chemins", Toast.LENGTH_SHORT).show();
+            }
             chargerModeles();
             creerRecyclerView();
         }
@@ -99,33 +109,6 @@ public class MainActivity extends AppCompatActivity {
         catch (IOException ignored){}
     }
 
-    /**
-     * Charge les chemins des modèles stockés dans le stockage privé de l'application dans la liste cheminsModeles
-     */
-    public void chargerChemins() {
-        ArrayList<String> chemins = new ArrayList<>();
-        try {
-            InputStream is = this.openFileInput("chemins.txt");
-
-            if (is != null) {
-                InputStreamReader isr = new InputStreamReader(is);
-                BufferedReader br = new BufferedReader(isr);
-                String buffer = "";
-
-                while ((buffer = br.readLine()) != null) {
-                    chemins.add(buffer);
-                }
-
-                is.close();
-                cheminsModeles = chemins;
-            }
-        }
-        catch (FileNotFoundException e) {
-            Toast.makeText(this, "Certains modèles sont introuvables", Toast.LENGTH_SHORT).show();
-        } catch (IOException e) {
-            Toast.makeText(this, "Erreur lors de la lecture des modèles", Toast.LENGTH_SHORT).show();
-        }
-    }
 
     /**
      * Charge les modèles stockés dans le stockage privé de l'application à partir des chemins stockés dans le fichier chemins.txt
@@ -134,21 +117,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<Modele> modeles = new ArrayList<>();
         for(String path : cheminsModeles){
             try {
-                InputStream is = this.openFileInput(path);
-
-                if (is != null) {
-                    InputStreamReader isr = new InputStreamReader(is);
-                    BufferedReader br = new BufferedReader(isr);
-                    String buffer = "";
-                    StringBuilder builder = new StringBuilder();
-
-                    while ((buffer = br.readLine()) != null) {
-                        builder.append(buffer);
-                    }
-
-                    is.close();
-                    modeles.add(new ObjectMapper().readValue(builder.toString(), Modele.class));
-                }
+                modeles.add(FilesUtils.chargerModele(this, path));
             }
             catch (FileNotFoundException e) {
                 Toast.makeText(this, "Certains modèles sont introuvables", Toast.LENGTH_SHORT).show();

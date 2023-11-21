@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.fernandes_dos_santos_dev_mob.R;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fernandes_dos_santos_dev_mob.construction.Utils.FilesUtils;
 import fernandes_dos_santos_dev_mob.construction.camera.CameraActivity;
 import fernandes_dos_santos_dev_mob.construction.modifierAcces.ModifierAccesActivity;
 import fernandes_dos_santos_dev_mob.donnees.FabriqueIDs;
@@ -46,10 +47,14 @@ public class ModifierModeleActivity extends AppCompatActivity {
         // Récupération du modèle
         path = getIntent().getStringExtra("path");
         if (path != null) {
+            try {
+                modele = FilesUtils.chargerModele(this, path);
+            } catch (IOException e) {
+                Toast.makeText(this, "Erreur lors de la lecture du modèle", Toast.LENGTH_SHORT).show();
+            }
             if(modele==null){
                 modele = new Modele();
             }
-            chargerModele();
         }
         else {
             modele = new Modele();
@@ -178,19 +183,6 @@ public class ModifierModeleActivity extends AppCompatActivity {
     }
 
     /**
-     * Ecrit le JSON dans le fichier nomModele.json dans le stockage privé de l'application
-     */
-    public void ecrireJSON(){
-        try {
-            OutputStreamWriter osw = new OutputStreamWriter(this.openFileOutput(path, Context.MODE_PRIVATE));
-            osw.write(modele.toJSON());
-            osw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
      * Annule les modifications du modèle et retourne à l'activité précédente
      */
     public void annuler(View view){
@@ -204,7 +196,11 @@ public class ModifierModeleActivity extends AppCompatActivity {
      */
     public void valider(View view){
         modele = modeleEnModification;
-        ecrireJSON();
+        try {
+            FilesUtils.ecrireTexte(this, modele.toJSON(), path);
+        } catch (IOException e) {
+            Toast.makeText(this, "Erreur lors de la sauvegarde du modèle", Toast.LENGTH_SHORT).show();
+        }
         Intent intent = new Intent();
         intent.putExtra("path", path);
         terminerActivite(RESULT_OK, intent);
@@ -231,38 +227,5 @@ public class ModifierModeleActivity extends AppCompatActivity {
         intent.putExtra("orientation", orientation);
         intent.putExtra("path", path);
         startActivityForResult(intent, 1);
-    }
-
-    /**
-     * Charge le modele de chemin path et le stocke dans la variable modele.<br> Affiche un toast si le modele est introuvable ou si une erreur survient lors de la lecture du fichier
-     */
-    public void chargerModele(){
-        try {
-            // Ouverture du fichier
-            InputStream is = this.openFileInput(path);
-
-            if (is != null) {
-                InputStreamReader isr = new InputStreamReader(is);
-                BufferedReader br = new BufferedReader(isr);
-                String buffer = "";
-                StringBuilder builder = new StringBuilder();
-
-                // Lecture du fichier
-                while ((buffer = br.readLine()) != null) {
-                    builder.append(buffer);
-                }
-
-                is.close();
-                isr.close();
-
-                // Creation du modele
-                modele = new ObjectMapper().readValue(builder.toString(), Modele.class);
-            }
-        }
-        catch (FileNotFoundException e) {
-            Toast.makeText(this, "Le modele est introuvable", Toast.LENGTH_SHORT).show();
-        } catch (IOException e) {
-            Toast.makeText(this, "Erreur lors de la lecture du modèle", Toast.LENGTH_SHORT).show();
-        }
     }
 }
