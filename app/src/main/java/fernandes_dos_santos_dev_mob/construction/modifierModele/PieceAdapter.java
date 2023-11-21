@@ -1,12 +1,12 @@
 package fernandes_dos_santos_dev_mob.construction.modifierModele;
 
+import android.graphics.drawable.BitmapDrawable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.fernandes_dos_santos_dev_mob.R;
@@ -21,16 +21,16 @@ public class PieceAdapter extends RecyclerView.Adapter<PieceAdapter.PieceViewHol
 
     public static class PieceViewHolder extends RecyclerView.ViewHolder {
         private Piece piece;
-        private ImageView nord, est, sud, ouest;
+        private Button imageNord, imageEst, imageSud, imageOuest;
         private Button bouttonNord, bouttonEst, bouttonSud, bouttonOuest;
         private TextView nomPiece;
 
         public PieceViewHolder(View view) {
             super(view);
-            nord = view.findViewById(R.id.imageNord);
-            est = view.findViewById(R.id.imageEst);
-            sud = view.findViewById(R.id.imageSud);
-            ouest = view.findViewById(R.id.imageOuest);
+            imageNord = view.findViewById(R.id.imageNord);
+            imageEst = view.findViewById(R.id.imageEst);
+            imageSud = view.findViewById(R.id.imageSud);
+            imageOuest = view.findViewById(R.id.imageOuest);
             nomPiece = view.findViewById(R.id.texteNomPiece);
 
             bouttonNord = view.findViewById(R.id.boutonPhotoNord);
@@ -52,41 +52,55 @@ public class PieceAdapter extends RecyclerView.Adapter<PieceAdapter.PieceViewHol
                     }
                 }
             });
-            creerEcouteurButton(bouttonNord, Mur.NORD);
-            creerEcouteurButton(bouttonEst, Mur.EST);
-            creerEcouteurButton(bouttonSud, Mur.SUD);
-            creerEcouteurButton(bouttonOuest, Mur.OUEST);
+            creerEcouteurButtonPhoto(bouttonNord, Mur.NORD);
+            creerEcouteurButtonPhoto(bouttonEst, Mur.EST);
+            creerEcouteurButtonPhoto(bouttonSud, Mur.SUD);
+            creerEcouteurButtonPhoto(bouttonOuest, Mur.OUEST);
+
+            creerEcouteurButtonAcces(imageNord, Mur.NORD);
+            creerEcouteurButtonAcces(imageEst, Mur.EST);
+            creerEcouteurButtonAcces(imageSud, Mur.SUD);
+            creerEcouteurButtonAcces(imageOuest, Mur.OUEST);
         }
 
         public void setPiece(Piece p){
             this.piece = p;
         }
 
-        public ImageView getNord() {
-            return nord;
+        public Button getImageNord() {
+            return imageNord;
         }
 
-        public ImageView getEst() {
-            return est;
+        public Button getImageEst() {
+            return imageEst;
         }
 
-        public ImageView getSud() {
-            return sud;
+        public Button getImageSud() {
+            return imageSud;
         }
 
-        public ImageView getOuest() {
-            return ouest;
+        public Button getImageOuest() {
+            return imageOuest;
         }
 
         public TextView getNomPiece() {
             return nomPiece;
         }
 
-        public void creerEcouteurButton(View view, int orientation){
+        public void creerEcouteurButtonPhoto(View view, int orientation){
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     ((ModifierModeleActivity) view.getContext()).prendrePhotoMur(getAdapterPosition(), orientation);
+                }
+            });
+        }
+
+        public void creerEcouteurButtonAcces(View view, int orientation){
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ((ModifierModeleActivity) view.getContext()).changerActiviteModifierAccesActivity(piece.getIdPiece(), orientation);
                 }
             });
         }
@@ -106,17 +120,23 @@ public class PieceAdapter extends RecyclerView.Adapter<PieceAdapter.PieceViewHol
     public void onBindViewHolder(PieceAdapter.PieceViewHolder holder, int position) {
         holder.getNomPiece().setText(listePieces.get(position).getNomPiece());
         holder.setPiece(listePieces.get(position));
+
+
         if(listePieces.get(position).getMur(Mur.NORD) != null){
-            holder.getNord().setImageBitmap(listePieces.get(position).getMur(Mur.NORD).getImageBitmap());
+            BitmapDrawable image = new BitmapDrawable(holder.itemView.getContext().getResources(), listePieces.get(position).getMur(Mur.NORD).getImageBitmap());
+            holder.getImageNord().setBackground(image);
         }
         if(listePieces.get(position).getMur(Mur.EST) != null){
-            holder.getEst().setImageBitmap(listePieces.get(position).getMur(Mur.EST).getImageBitmap());
+            BitmapDrawable image = new BitmapDrawable(holder.itemView.getContext().getResources(), listePieces.get(position).getMur(Mur.EST).getImageBitmap());
+            holder.getImageEst().setBackground(image);
         }
         if(listePieces.get(position).getMur(Mur.SUD) != null){
-            holder.getSud().setImageBitmap(listePieces.get(position).getMur(Mur.SUD).getImageBitmap());
+            BitmapDrawable image = new BitmapDrawable(holder.itemView.getContext().getResources(), listePieces.get(position).getMur(Mur.SUD).getImageBitmap());
+            holder.getImageSud().setBackground(image);
         }
         if(listePieces.get(position).getMur(Mur.OUEST) != null){
-            holder.getOuest().setImageBitmap(listePieces.get(position).getMur(Mur.OUEST).getImageBitmap());
+            BitmapDrawable image = new BitmapDrawable(holder.itemView.getContext().getResources(), listePieces.get(position).getMur(Mur.OUEST).getImageBitmap());
+            holder.getImageOuest().setBackground(image);
         }
     }
 

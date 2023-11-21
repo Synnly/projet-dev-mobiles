@@ -26,8 +26,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginBottom="128dp" app:layout_constraintEnd_toEndOf="parent"
             android:padding="5dp"
-            android:onClick="nouveauModele" android:background="@drawable/border_radius_small_blue"
-
+            android:onClick="nouvellePiece" android:background="@drawable/border_radius_small_blue"
             android:layout_marginEnd="48dp"/>
 
     <androidx.appcompat.widget.AppCompatButton

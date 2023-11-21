@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.fernandes_dos_santos_dev_mob.R;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fernandes_dos_santos_dev_mob.construction.camera.CameraActivity;
+import fernandes_dos_santos_dev_mob.construction.modifierAcces.ModifierAccesActivity;
 import fernandes_dos_santos_dev_mob.donnees.FabriqueIDs;
 import fernandes_dos_santos_dev_mob.donnees.Modele;
 import fernandes_dos_santos_dev_mob.donnees.Mur;
@@ -45,6 +46,9 @@ public class ModifierModeleActivity extends AppCompatActivity {
         // Récupération du modèle
         path = getIntent().getStringExtra("path");
         if (path != null) {
+            if(modele==null){
+                modele = new Modele();
+            }
             chargerModele();
         }
         else {
@@ -221,36 +225,44 @@ public class ModifierModeleActivity extends AppCompatActivity {
         finish();
     }
 
+    public void changerActiviteModifierAccesActivity(int idPiece, int orientation){
+        Intent intent = new Intent(this, ModifierAccesActivity.class);
+        intent.putExtra("idPiece", idPiece);
+        intent.putExtra("orientation", orientation);
+        intent.putExtra("path", path);
+        startActivityForResult(intent, 1);
+    }
+
     /**
      * Charge le modele de chemin path et le stocke dans la variable modele.<br> Affiche un toast si le modele est introuvable ou si une erreur survient lors de la lecture du fichier
      */
     public void chargerModele(){
-            try {
-                // Ouverture du fichier
-                InputStream is = this.openFileInput(path);
+        try {
+            // Ouverture du fichier
+            InputStream is = this.openFileInput(path);
 
-                if (is != null) {
-                    InputStreamReader isr = new InputStreamReader(is);
-                    BufferedReader br = new BufferedReader(isr);
-                    String buffer = "";
-                    StringBuilder builder = new StringBuilder();
+            if (is != null) {
+                InputStreamReader isr = new InputStreamReader(is);
+                BufferedReader br = new BufferedReader(isr);
+                String buffer = "";
+                StringBuilder builder = new StringBuilder();
 
-                    // Lecture du fichier
-                    while ((buffer = br.readLine()) != null) {
-                        builder.append(buffer);
-                    }
-
-                    is.close();
-                    isr.close();
-
-                    // Creation du modele
-                    modele = new ObjectMapper().readValue(builder.toString(), Modele.class);
+                // Lecture du fichier
+                while ((buffer = br.readLine()) != null) {
+                    builder.append(buffer);
                 }
-            }
-            catch (FileNotFoundException e) {
-                Toast.makeText(this, "Le modele est introuvable", Toast.LENGTH_SHORT).show();
-            } catch (IOException e) {
-                Toast.makeText(this, "Erreur lors de la lecture du modèle", Toast.LENGTH_SHORT).show();
+
+                is.close();
+                isr.close();
+
+                // Creation du modele
+                modele = new ObjectMapper().readValue(builder.toString(), Modele.class);
             }
         }
+        catch (FileNotFoundException e) {
+            Toast.makeText(this, "Le modele est introuvable", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            Toast.makeText(this, "Erreur lors de la lecture du modèle", Toast.LENGTH_SHORT).show();
+        }
+    }
 }

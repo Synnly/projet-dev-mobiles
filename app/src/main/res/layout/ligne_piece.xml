@@ -25,9 +25,9 @@
 
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="N"/>
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatButton
                     android:layout_width="65dp" android:layout_height="87dp"
-                    android:id="@+id/imageNord"/>
+                    android:id="@+id/imageNord" android:background="@android:color/transparent"/>
 
             <androidx.appcompat.widget.AppCompatButton
                     android:layout_width="65dp" android:layout_height="wrap_content"
@@ -42,9 +42,9 @@
 
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="E"/>
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatButton
                     android:layout_width="65dp" android:layout_height="87dp"
-                    android:id="@+id/imageEst"/>
+                    android:id="@+id/imageEst" android:background="@android:color/transparent"/>
 
             <androidx.appcompat.widget.AppCompatButton
                     android:layout_width="65dp" android:layout_height="wrap_content"
@@ -59,9 +59,9 @@
 
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="S"/>
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatButton
                     android:layout_width="65dp" android:layout_height="87dp"
-                    android:id="@+id/imageSud"/>
+                    android:id="@+id/imageSud" android:background="@android:color/transparent"/>
 
             <androidx.appcompat.widget.AppCompatButton
                     android:layout_width="65dp" android:layout_height="wrap_content"
@@ -76,9 +76,9 @@
 
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="O"/>
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatButton
                     android:layout_width="65dp" android:layout_height="87dp"
-                    android:id="@+id/imageOuest"/>
+                    android:id="@+id/imageOuest" android:background="@android:color/transparent"/>
 
             <androidx.appcompat.widget.AppCompatButton
                     android:layout_width="65dp" android:layout_height="wrap_content"
