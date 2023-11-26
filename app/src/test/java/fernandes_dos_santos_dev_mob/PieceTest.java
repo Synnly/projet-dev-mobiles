@@ -106,12 +106,11 @@ public class PieceTest extends TestCase {
     public void testValiderPiecesPlusieursMursEnCommun(){
         mur1 = new Mur(Mur.NORD); mur2 = new Mur(Mur.EST); mur3 = new Mur(Mur.SUD); mur4 = new Mur(Mur.OUEST);
         piece1.ajouterMur(mur1); piece1.ajouterMur(mur2); piece1.ajouterMur(mur3); piece1.ajouterMur(mur4);
+
         mur5 = new Mur(Mur.NORD); mur6 = new Mur(Mur.EST); mur7 = new Mur(Mur.SUD); mur8 = new Mur(Mur.OUEST);
         piece2.ajouterMur(mur5); piece2.ajouterMur(mur6); piece2.ajouterMur(mur7); piece2.ajouterMur(mur8);
-        porte1 = new Porte(mur2, rect1);
-        porte1.setMurB(mur8, rect1);
-        porte2 = new Porte(mur5, rect2);
-        porte2.setMurB(mur3, rect2);
+        porte1 = new Porte(mur3, rect1, piece2);
+        porte2 = new Porte(mur5, rect2, piece1);
 
         try{
             piece1.valider();

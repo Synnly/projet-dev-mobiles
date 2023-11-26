@@ -12,7 +12,7 @@ public class MurTest extends TestCase {
     private Modele modele;
     private Piece piece1, piece2;
     private Mur mur1, mur2;
-    private Porte porte1, porte2, port3;
+    private Porte porte1, porte2, porte3;
     private Rect rect1, rect2, rect3;
 
     public void setUp() throws Exception {
@@ -82,11 +82,9 @@ public class MurTest extends TestCase {
     }
 
     public void testValiderPortesSuperposent(){
-        porte1 = new Porte(mur1, rect1);
-        porte1.setMurB(mur2, rect1);
+        porte1 = new Porte(mur2, rect1, piece1);
         try {
-            porte2 = new Porte(mur1, rect2);
-            porte2.setMurB(mur2, rect2);
+            porte2 = new Porte(mur2, rect2, piece1);
             mur1.valider();
         }
         catch (ExceptionPortesSeSuperposent e){
@@ -97,8 +95,8 @@ public class MurTest extends TestCase {
         }
 
         try {
-            porte2 = new Porte(mur1, rect3);
-            porte2.setMurB(mur2, rect3);
+            porte3 = new Porte(mur2, rect3, piece1);
+            porte2 = new Porte(mur1, rect3, piece2);
             mur1.valider();
         }
         catch (Exception e){

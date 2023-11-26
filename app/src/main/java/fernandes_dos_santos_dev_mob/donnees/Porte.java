@@ -3,8 +3,7 @@ package fernandes_dos_santos_dev_mob.donnees;
 import android.graphics.Rect;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionMursIdentiques;
-import fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionNombreRectangleInvalide;
+import fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionRectangleNull;
 import fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionOrientationsIncoherentes;
 import fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionPiecesIdentiques;
 
@@ -12,33 +11,33 @@ import fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionPiecesIdentiques;
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "idPorte")
 public class Porte {
     private int idPorte;
-    private Mur murA, murB;
-    private Rect rectangleA, rectangleB;
+    private Mur murDepart;
+    private Rect rectangle;
+    private Piece pieceArrivee;
 
     /**
-     * Constructeur d'une porte. Une porte est un lien entre deux murs A et B et est représentée par un rectangle sur chaque mur. Ajoute la porte dans la liste des portes du mur
-     * @param mur Le premier mur de la porte
+     * Constructeur d'une porte. Une porte est un lien entre un mur de départ et une piece d'arrivée et est représentée par un rectangle sur le mur. Ajoute la porte dans la liste des portes du mur
+     * @param mur Le mur de la porte
      * @param rectangle Le rectangle de la porte sur le premier mur
+     * @param piece La piece d'arrivée de la porte
      */
-    public Porte(Mur mur, Rect rectangle) {
+    public Porte(Mur mur, Rect rectangle, Piece piece) {
         this.idPorte = FabriqueIDs.getinstance().getIDPorte();
-        this.murA = mur;
-        this.rectangleA = rectangle;
-        this.murB = null;
-        this.rectangleB = null;
+        this.murDepart = mur;
+        this.rectangle = rectangle;
+        this.pieceArrivee = piece;
         mur.ajouterPorte(this);
     }
 
     /**
-     * Constructeur de copie profonde d'une porte. À utiliser en conjonction avec setMurA et setMurB pour compléter la copie.
+     * Constructeur de copie profonde d'une porte. À utiliser en conjonction avec setMurDepart et setPieceArrivee pour compléter la copie.
      * @param p La porte à copier
      */
     public Porte(Porte p){
         this.idPorte = p.idPorte;
-        this.murA = null;
-        this.rectangleA = null;
-        this.murB = null;
-        this.rectangleB = null;
+        this.murDepart = null;
+        this.rectangle = new Rect(p.rectangle);
+        this.pieceArrivee = null;
     }
 
     /**
@@ -49,116 +48,73 @@ public class Porte {
     }
 
     /**
-     * Modifie le mur A de la porte ainsi que le rectangle de la porte. Retire cette porte de l'ancien mur A puis l'ajoute dans la liste des portes du nouveau mur A
-     * @param murA Le premier mur de la porte
+     * Modifie le mur de la porte ainsi que le rectangle de la porte. Retire cette porte de l'ancien mur puis l'ajoute dans la liste des portes du nouveau mur
+     * @param mur Le mur de la porte
      * @param rectangle Le rectangle de la porte sur le premier mur
      */
-    public void setMurA(Mur murA, Rect rectangle) {
-        if (this.murA!=null) {
-            this.murA.retirerPorte(this);
+    public void setMurDepart(Mur mur, Rect rectangle) {
+        if (this.murDepart !=null) {
+            this.murDepart.retirerPorte(this);
         }
-        this.murA = murA;
-        if (this.murA!=null) {
-            this.murA.ajouterPorte(this);
+        this.murDepart = mur;
+        if (this.murDepart !=null) {
+            this.murDepart.ajouterPorte(this);
         }
-        this.rectangleA = rectangle;
+        this.rectangle = rectangle;
     }
 
     /**
-     * Modifie le mur B de la porte ainsi que le rectangle de la porte. Retire cette porte de l'ancien mur B puis l'ajoute dans la liste des portes du nouveau mur B
-     * @param murB Le premier mur de la porte
-     * @param rectangle Le rectangle de la porte sur le premier mur
+     * Renvoie le mur de la porte
      */
-    public void setMurB(Mur murB, Rect rectangle) {
-        if (this.murB!=null) {
-            this.murB.retirerPorte(this);
-        }
-        this.murB = murB;
-        if (this.murB!=null) {
-            this.murB.ajouterPorte(this);
-        }
-        this.rectangleB = rectangle;
+    public Mur getMurDepart() {
+        return murDepart;
     }
 
     /**
-     * Renvoie le premier mur de la porte
+     * Renvoie le rectangle de la porte
      */
-    public Mur getMurA() {
-        return murA;
+    public Rect getRectangle() {
+        return rectangle;
     }
 
     /**
-     * Renvoie le deuxième mur de la porte
+     * Assigne le rectangle de la porte au mur
+     * @param rectangle Le rectangle de la porte
      */
-    public Mur getMurB() {
-        return murB;
+    public void setRectangle(Rect rectangle) {
+        this.rectangle = rectangle;
     }
 
-    /**
-     * Renvoie le rectangle de la porte sur le mur correspondant
-     * @param mur Le mur sur lequel se trouve le rectangle de la porte
-     */
-    public Rect getRectangle(Mur mur) {
-        if(mur == murA) {
-            return rectangleA;
-        }
-        else if(mur == murB) {
-            return rectangleB;
-        }
-        else {
-            return null;
-        }
+    public Piece getPieceArrivee() {
+        return pieceArrivee;
     }
-    /**
-     * Assigne le rectangle de la porte sur le mur correspondant. Si le mur en paramètre ne correspond à aucun des deux murs de la porte, ne fait rien
-     * @param mur Le mur sur lequel se trouve le rectangle de la porte
-     * @param rectangle Le rectangle de la porte sur le mur
-     */
-    public void setRectangle(Mur mur, Rect rectangle) {
-        if(mur.equals(murA)) {
-            this.rectangleA = rectangle;
-        }
-        if (mur.equals(murB)) {
-            this.rectangleB = rectangle;
-        }
+
+    public void setPieceArrivee(Piece pieceArrivee) {
+        this.pieceArrivee = pieceArrivee;
     }
 
     /**
      * Verifie si la porte est valide. Une porte est valide si : <br/>
-     * - ni les murs ni les rectangles ne sont null <br/>
-     * - les murs sont differents <br/>
-     * - les rectangles ne se superposent pas <br/>
-     * - les murs sont bien adjacents <br/>
-     * @throws ExceptionNombreRectangleInvalide Si les rectangles sont null
-     * @throws ExceptionMursIdentiques Si les murs sont identiques
-     * @throws ExceptionOrientationsIncoherentes Si les murs ne sont pas adjacents
+     * - le mur n'est pas null <br/>
+     * - les pieces de départ et d'arrive sont differents <br/>
+     * - il existe une porte dans la piece d'arrivée d'orientation opposée <br/>
+     * @throws ExceptionRectangleNull Si le rectangle est null
+     * @throws ExceptionPiecesIdentiques Si les pieces sont identiques
+     * @throws ExceptionOrientationsIncoherentes Si il n'existe pas de porte dans la piece d'arrivée d'orientation opposée
      */
     public void valider() throws Exception {
-        // Verifie que les rectangles ne sont pas null (et par conséquent que les murs ne sont pas null)
-        if(rectangleA == null || rectangleB == null) {
-            throw new ExceptionNombreRectangleInvalide(idPorte);
-        }
-
-        // Verifie que les murs sont differents
-        if(murA.equals(murB)) {
-            throw new ExceptionMursIdentiques(idPorte);
+        // Verifie que le rectangle n'est pas null
+        if(rectangle == null) {
+            throw new ExceptionRectangleNull(idPorte);
         }
 
         // Verifie que les murs sont bien adjacents
-        if(murA.getOrientation() != (murB.getOrientation()+2)%4) {
+        if(pieceArrivee == null || !pieceArrivee.porteOrientationExiste((murDepart.getOrientation()+2)%4)) {
             throw new ExceptionOrientationsIncoherentes(idPorte);
         }
 
-        if(murA.getPiece() == murB.getPiece()) {
+        if(murDepart.getPiece() == pieceArrivee) {
             throw new ExceptionPiecesIdentiques(idPorte);
         }
-    }
-
-    public Rect getRectangleA() {
-        return rectangleA;
-    }
-
-    public Rect getRectangleB() {
-        return rectangleB;
     }
 }

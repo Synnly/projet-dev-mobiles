@@ -1,10 +1,12 @@
 package fernandes_dos_santos_dev_mob.donnees;
 
 import android.graphics.Rect;
+import androidx.annotation.NonNull;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import fernandes_dos_santos_dev_mob.exceptions.piece.ExceptionNombreMursInvalide;
 import fernandes_dos_santos_dev_mob.exceptions.piece.ExceptionPiecesReliesParPlusieursMurs;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,8 +84,7 @@ public class Piece {
             for(Porte porte : p.getListeMurs().get(i).getListePortes()){ // Parcours des portes du mur de la pièce à copier
                 if(!portesDejaAjoutees.contains(porte)){ // Si la porte n'a pas déjà été ajoutée
                     Porte nouvellePorte = new Porte(listePortes.get(porte.getIdPorte())); // La porte à copie peut etre null, à vérifier
-                    nouvellePorte.setMurA(listeNouveauxMurs.get(porte.getMurA().getIdMur()), new Rect(porte.getRectangle(porte.getMurA())));
-                    nouvellePorte.setMurB(listeNouveauxMurs.get(porte.getMurB().getIdMur()), new Rect(porte.getRectangle(porte.getMurB())));
+                    nouvellePorte.setMurDepart(listeNouveauxMurs.get(porte.getMurDepart().getIdMur()), new Rect(porte.getRectangle()));
                     portesDejaAjoutees.add(porte);
                 }
             }
@@ -186,8 +187,7 @@ public class Piece {
             // Liste des pieces reliées au mur actuel
             ArrayList<Piece> listePiecesMurActuel = new ArrayList<>();
             for(Porte porte : mur.getListePortes()){
-                listePiecesMurActuel.add(porte.getMurA().getPiece());
-                listePiecesMurActuel.add(porte.getMurB().getPiece());
+                listePiecesMurActuel.add(porte.getMurDepart().getPiece());
             }
 
             // On retire la pièce actuelle de la liste
@@ -202,5 +202,20 @@ public class Piece {
 
             listePieces.addAll(listePiecesMurActuel);
         }
+    }
+
+    /**
+     * Verifie si une porte d'orientation orientation existe dans la pièce
+     * @param orientation L'orientation de la porte à vérifier
+     */
+    public boolean porteOrientationExiste(int orientation){
+        return getMur(orientation) != null && !getMur(orientation).getListePortes().isEmpty();
+    }
+
+    @NonNull
+    @NotNull
+    @Override
+    public String toString() {
+        return nomPiece;
     }
 }

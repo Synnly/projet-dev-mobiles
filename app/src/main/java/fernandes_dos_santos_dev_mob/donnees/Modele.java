@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fernandes_dos_santos_dev_mob.exceptions.modele.ExceptionAucunePiece;
+import fernandes_dos_santos_dev_mob.exceptions.modele.ExceptionPiecesNonReliees;
+
 import java.util.ArrayList;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "idModele", scope = Modele.class)
@@ -67,16 +69,37 @@ public class Modele {
      * @param piece La pièce à ajouter
      */
     public void ajouterPiece(Piece piece) {
-        this.listePieces.add(piece);
+        if(!this.listePieces.contains(piece)){
+            this.listePieces.add(piece);
+        }
     }
 
     /**
-     * Verfiie si le modèle est valide. Un modèle est valide si toutes ses pièces sont valides. Voir Piece.valider() pour les exceptions provenant d'une pièce invalide
+     * Verfiie si le modèle est valide. Un modèle est valide si toutes ses pièces sont valides et que toutes les pièces soient reliées. Voir Piece.valider() pour les exceptions provenant d'une pièce invalide
      * @throws ExceptionAucunePiece Si le modèle ne contient aucune pièce
+     * @throws ExceptionPiecesNonReliees Si le modèle contient des pièces non reliées
      */
     public void valider() throws Exception {
         if(this.listePieces.isEmpty()){
             throw new ExceptionAucunePiece();
+        }
+
+        for (Piece piece : this.listePieces){
+            System.out.println(piece.getIdPiece());
+        }
+
+        // Si le modèle contient plus d'une pièce, on vérifie que chaque pièce est reliée à une autre pièce
+        if(this.listePieces.size() > 1){
+            for(Piece p : listePieces){
+                int nbPortes = 0;
+                for(Mur m : p.getListeMurs()){
+                    nbPortes += m.getListePortes().size();
+                }
+
+                if(nbPortes == 0){
+                    throw new ExceptionPiecesNonReliees(p.getNomPiece());
+                }
+            }
         }
 
         for(Piece piece : this.listePieces){
