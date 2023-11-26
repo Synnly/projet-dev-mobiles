@@ -5,20 +5,20 @@ class Modele{
     int idModele
     Modele()
     Modele(String nomModele)
-    Piece getPiece(int idPiece)
+    Modele(Modele m)
     void ajouterPiece(Piece p)
     boolean valider()
+    String toJSON()
 }
 
 class Piece{
     String nomPiece
     int idPiece
+    Piece()
     Piece(String nomPiece, Modele m)
     Piece(Modele m)
     Mur getMur(int orientation)
     void ajouterMur(Mur m)
-    void ajouterPorte(Porte p)
-    void retirerPorte(Porte p)
     Porte getPorte(int idPorte)
     boolean valider()
 }
@@ -26,9 +26,12 @@ class Piece{
 class Mur{
     int idMur
     int orientation
+    byte[] binaireImage
     Mur(int orientation)
-    void ajouterImage(Image i)
-    Image getImage()
+    Mur(Mur murDepart, Piece pieceArivee)
+    Mur(int orientation, byte[] binaireImage, Piece piece, Porte[] portes)
+    void setBitmap(byte[] binaireImage))
+    void retirerPorte(Porte p)
     void ajouterPorte(Porte p)
     int getOrientation()
 
@@ -36,18 +39,16 @@ class Mur{
 
 class Porte{
     int idPorte
+    int left, right, top, bottom
+    Porte()
+    Porte(Porte p)
     Porte(Mur a, Rect rectangle)
-    void setMurA(Mur mur, Rect rectangle)
-    void setMurB(Mur mur, Rect rectangle)
-    Mur getMurA()
-    Mur getMurB()
-    Rect getRectangle(Mur mur)
-    void setRectangle(Mur mur, Rect rectangle)
+    void setMurDepart(Mur mur, Rect rectangle)
     boolean valider()
 }
+
 Modele "1"--"*" Piece
 Piece "1"--"4" Mur
-Mur "2"--"*" Porte
-Mur --"1" Image
-Porte --"2" Rect
+Mur "1"--"*" Porte
+Porte --"1" Piece
 @enduml

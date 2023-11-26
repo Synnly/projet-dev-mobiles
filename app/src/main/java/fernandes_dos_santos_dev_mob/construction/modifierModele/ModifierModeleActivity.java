@@ -234,11 +234,21 @@ public class ModifierModeleActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Change d'activité pour aller à l'activité de modification d'accès. Envoie un intent avec l'URI du modèle à modifier
+     * @param idPiece L'id de la pièce
+     * @param orientation L'orientation du mur
+     */
     public void changerActiviteModifierAccesActivity(int idPiece, int orientation){
         Intent intent = new Intent(this, ModifierAccesActivity.class);
-        intent.putExtra("idPiece", idPiece);
-        intent.putExtra("orientation", orientation);
-        intent.putExtra("path", path);
-        startActivityForResult(intent, INTENT_MODIFIER_ACCES);
+        if(modeleEnModification.getListePieces().get(idPiece).getMur(orientation) != null) {
+            intent.putExtra("idPiece", idPiece);
+            intent.putExtra("orientation", orientation);
+            intent.putExtra("path", path);
+            startActivityForResult(intent, INTENT_MODIFIER_ACCES);
+        }
+        else{
+            Toast.makeText(this, "Veuillez prendre une photo du mur avant.", Toast.LENGTH_SHORT).show();
+        }
     }
 }
