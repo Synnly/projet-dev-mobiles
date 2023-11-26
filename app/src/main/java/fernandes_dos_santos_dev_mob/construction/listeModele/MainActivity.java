@@ -2,20 +2,22 @@ package fernandes_dos_santos_dev_mob.construction.listeModele;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.FileUtils;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.fernandes_dos_santos_dev_mob.R;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import fernandes_dos_santos_dev_mob.construction.Utils.FilesUtils;
 import fernandes_dos_santos_dev_mob.construction.modifierModele.ModifierModeleActivity;
 import fernandes_dos_santos_dev_mob.donnees.FabriqueIDs;
 import fernandes_dos_santos_dev_mob.donnees.Modele;
-import java.io.*;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -52,9 +54,9 @@ public class MainActivity extends AppCompatActivity {
      */
     public void changerActiviteModifierModeleActivity(int indice){
         indiceModele = indice;
-        System.out.println(indice);
         Intent intent = new Intent(this, ModifierModeleActivity.class);
         intent.putExtra("path", cheminsModeles.get(indice));
+        intent.putExtra("nom", listeModeles.get(indice).getNomModele());
         startActivityForResult(intent, 1);
     }
 

@@ -9,12 +9,11 @@ import fernandes_dos_santos_dev_mob.exceptions.modele.ExceptionPiecesNonReliees;
 
 import java.util.ArrayList;
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "idModele", scope = Modele.class)
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "IDModele", scope = Modele.class)
 public class Modele {
     private String nomModele;
     private int idModele;
 
-    //@JsonManagedReference(value="modele-pieces")
     private ArrayList<Piece> listePieces;
 
     /**

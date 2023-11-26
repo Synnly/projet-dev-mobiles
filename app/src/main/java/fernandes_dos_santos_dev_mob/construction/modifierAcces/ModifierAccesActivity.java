@@ -1,8 +1,9 @@
 package fernandes_dos_santos_dev_mob.construction.modifierAcces;
 
+import android.content.Intent;
 import android.graphics.*;
 import android.graphics.drawable.BitmapDrawable;
-import android.util.Log;
+import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -10,19 +11,16 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.fernandes_dos_santos_dev_mob.R;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import fernandes_dos_santos_dev_mob.construction.Utils.FilesUtils;
 import fernandes_dos_santos_dev_mob.donnees.Modele;
 import fernandes_dos_santos_dev_mob.donnees.Mur;
 import fernandes_dos_santos_dev_mob.donnees.Piece;
 import fernandes_dos_santos_dev_mob.donnees.Porte;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ModifierAccesActivity extends AppCompatActivity {
@@ -138,7 +136,7 @@ public class ModifierAccesActivity extends AppCompatActivity {
                             rectangle = new Rect(pointeur1X, pointeur1Y, pointeur2X, pointeur2Y);
                             rectangle.sort();
 
-                            Porte porte = new Porte(mur, rectangle);
+                            Porte porte = new Porte(mur, rectangle, null);
                             clearCanvas(surfaceHolderDessin);
                             creerRecyclerView();
                         }
@@ -171,7 +169,7 @@ public class ModifierAccesActivity extends AppCompatActivity {
     public void clearCanvas(SurfaceHolder surfaceHolderDessin){
         Canvas c = surfaceHolderDessin.lockCanvas();
         c.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-        dessinerAcces(c, listePortes, surfaceHolderDessin);
+        dessinerAcces(c, listePortes);
         surfaceHolderDessin.unlockCanvasAndPost(c);
     }
 
@@ -183,7 +181,7 @@ public class ModifierAccesActivity extends AppCompatActivity {
     public void clearCanvasAndDrawRectangle(Rect rectangle, SurfaceHolder surfaceHolderDessin){
         Canvas c = surfaceHolderDessin.lockCanvas();
         c.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-        dessinerAcces(c, listePortes, surfaceHolderDessin);
+        dessinerAcces(c, listePortes);
         c.drawRect(rectangle, peinture);
         surfaceHolderDessin.unlockCanvasAndPost(c);
     }
@@ -191,12 +189,59 @@ public class ModifierAccesActivity extends AppCompatActivity {
     /**
      * Dessine les zones d'acces sur la surface de dessin. <br>Nécessite que le surfaceHolderDessin soit verrouillé avant l'appel de la fonction et déverrouillé après.
      * @param listePortes La liste des portes
-     * @param surfaceHolderDessin Le holder de la surface de dessin
+     * @param c Le canvas de la surface de dessin
      */
-    public void dessinerAcces(Canvas c, ArrayList<Porte> listePortes, SurfaceHolder surfaceHolderDessin){
+    public void dessinerAcces(Canvas c, ArrayList<Porte> listePortes){
         c.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
         for(Porte porte : listePortes){
-            c.drawRect(porte.getRectangle(mur), peinture);
+            c.drawRect(porte.getRectangle(), peinture);
         }
+    }
+
+    /**
+     * Valide les modifications du modèle et retourne à l'activité précédente
+     * @param view la vue
+     */
+    public void valider(View view){
+        try {
+            System.out.println(modele.toJSON());
+            FilesUtils.ecrireTexte(this, modele.toJSON(), path);
+        } catch (IOException e) {
+            Toast.makeText(this, "Erreur lors de la sauvegarde du modèle", Toast.LENGTH_SHORT).show();
+        }
+        Intent intent = new Intent();
+        intent.putExtra("path", path);
+        terminerActivite(RESULT_OK, intent);
+    }
+
+    /**
+     * Annule les modifications du modèle et retourne à l'activité précédente
+     * @param view la vue
+     */
+    public void annuler(View view){
+        setResult(RESULT_CANCELED);
+        finish();
+    }
+
+
+    /**
+     * Termine l'activité en envoyant un intent avec le code de retour et les données
+     * @param resultCode Le code de retour
+     * @param data Les données. Peut être null
+     */
+    public void terminerActivite(int resultCode, Intent data){
+        if(data == null){
+            setResult(resultCode);
+        }
+        else {
+            setResult(resultCode, data);
+        }
+        finish();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        clearCanvas(((SurfaceView)findViewById(R.id.rectangleSelection)).getHolder());
     }
 }

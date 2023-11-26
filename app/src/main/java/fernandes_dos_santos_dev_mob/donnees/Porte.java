@@ -2,18 +2,32 @@ package fernandes_dos_santos_dev_mob.donnees;
 
 import android.graphics.Rect;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionRectangleNull;
 import fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionOrientationsIncoherentes;
 import fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionPiecesIdentiques;
+import fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionRectangleNull;
 
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "idPorte")
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "IDPorte", scope = Porte.class)
 public class Porte {
     private int idPorte;
+    private int left = -1;
+    private int top = -1;
+    private int right = -1;
+    private int bottom = -1;
     private Mur murDepart;
-    private Rect rectangle;
     private Piece pieceArrivee;
+
+    /*
+    Une entité divine doit surement me hair
+    Ce parametre ne sert a rien mais pour une raison qui m'échappe si je la retire
+    jackson inclus l'objet android.graphics.Rect dans le json et un attribut "empty" est ajouté
+    alors qu'il n'existe pas dans la classe Rect
+    :shrug:
+     */
+    @JsonIgnore
+    private Rect rectangle;
 
     /**
      * Constructeur d'une porte. Une porte est un lien entre un mur de départ et une piece d'arrivée et est représentée par un rectangle sur le mur. Ajoute la porte dans la liste des portes du mur
@@ -24,7 +38,10 @@ public class Porte {
     public Porte(Mur mur, Rect rectangle, Piece piece) {
         this.idPorte = FabriqueIDs.getinstance().getIDPorte();
         this.murDepart = mur;
-        this.rectangle = rectangle;
+        this.left = rectangle.left;
+        this.top = rectangle.top;
+        this.right = rectangle.right;
+        this.bottom = rectangle.bottom;
         this.pieceArrivee = piece;
         mur.ajouterPorte(this);
     }
@@ -36,7 +53,17 @@ public class Porte {
     public Porte(Porte p){
         this.idPorte = p.idPorte;
         this.murDepart = null;
-        this.rectangle = new Rect(p.rectangle);
+        setRectangle(p.getRectangle());
+        this.pieceArrivee = null;
+    }
+
+    public Porte(){
+        this.idPorte = FabriqueIDs.getinstance().getIDPorte();
+        this.murDepart = null;
+        this.left = 0;
+        this.top = 0;
+        this.right = 0;
+        this.bottom = 0;
         this.pieceArrivee = null;
     }
 
@@ -60,7 +87,7 @@ public class Porte {
         if (this.murDepart !=null) {
             this.murDepart.ajouterPorte(this);
         }
-        this.rectangle = rectangle;
+        setRectangle(rectangle);
     }
 
     /**
@@ -74,7 +101,7 @@ public class Porte {
      * Renvoie le rectangle de la porte
      */
     public Rect getRectangle() {
-        return rectangle;
+        return new Rect(left, top, right, bottom);
     }
 
     /**
@@ -82,7 +109,18 @@ public class Porte {
      * @param rectangle Le rectangle de la porte
      */
     public void setRectangle(Rect rectangle) {
-        this.rectangle = rectangle;
+        if(rectangle == null) {
+            this.left = -1;
+            this.top = -1;
+            this.right = -1;
+            this.bottom = -1;
+        }
+        else {
+            this.left = rectangle.left;
+            this.top = rectangle.top;
+            this.right = rectangle.right;
+            this.bottom = rectangle.bottom;
+        }
     }
 
     public Piece getPieceArrivee() {
@@ -91,6 +129,38 @@ public class Porte {
 
     public void setPieceArrivee(Piece pieceArrivee) {
         this.pieceArrivee = pieceArrivee;
+    }
+
+    public int getLeft() {
+        return left;
+    }
+
+    public void setLeft(int left) {
+        this.left = left;
+    }
+
+    public int getTop() {
+        return top;
+    }
+
+    public void setTop(int top) {
+        this.top = top;
+    }
+
+    public int getRight() {
+        return right;
+    }
+
+    public void setRight(int right) {
+        this.right = right;
+    }
+
+    public int getBottom() {
+        return bottom;
+    }
+
+    public void setBottom(int bottom) {
+        this.bottom = bottom;
     }
 
     /**
@@ -104,7 +174,7 @@ public class Porte {
      */
     public void valider() throws Exception {
         // Verifie que le rectangle n'est pas null
-        if(rectangle == null) {
+        if(left == -1 && top == -1 && right == -1 && bottom == -1) {
             throw new ExceptionRectangleNull(idPorte);
         }
 

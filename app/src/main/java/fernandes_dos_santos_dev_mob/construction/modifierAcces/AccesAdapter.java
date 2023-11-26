@@ -21,20 +21,52 @@ public class AccesAdapter extends RecyclerView.Adapter<AccesAdapter.AccesViewHol
 
         private Spinner spinner;
         private Porte porte;
+        private ArrayList<Piece> listePieces;
 
         public AccesViewHolder(View view) {
             super(view);
             spinner = view.findViewById(R.id.spinnerPieces);
+            spinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                    porte.setPieceArrivee(listePieces.get(position));
+                }
+
+                @Override
+                public void onNothingSelected(android.widget.AdapterView<?> parent) {}
+            });
         }
 
+        /**
+         * Modifie la porte de l'acces
+         * @param porte la nouvelle porte
+         */
         public void setPorte(Porte porte) {
             this.porte = porte;
         }
 
-        public void remplirSpinner(ArrayList<String> listePieces) {
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(spinner.getContext(), android.R.layout.simple_spinner_item, listePieces);
+        /**
+         * Remplis la liste deroulante avec le nom des pieces et ajoute la liste des pieces en parametre
+         * @param listePieces la liste des pieces
+         */
+        public void remplirSpinner(ArrayList<Piece> listePieces) {
+            this.listePieces = listePieces;
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(spinner.getContext(), android.R.layout.simple_spinner_item, listePiecesToStringArray(listePieces));
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(adapter);
+        }
+
+        /**
+         * Transforme une liste de pieces en liste de noms de pieces
+         * @param listePieces la liste de pieces
+         * @return la liste de noms de pieces
+         */
+        public ArrayList<String> listePiecesToStringArray(ArrayList<Piece> listePieces) {
+            ArrayList<String> listePiecesString = new ArrayList<>();
+            for (Piece piece : listePieces) {
+                listePiecesString.add(piece.getNomPiece());
+            }
+            return listePiecesString;
         }
     }
 
@@ -52,20 +84,12 @@ public class AccesAdapter extends RecyclerView.Adapter<AccesAdapter.AccesViewHol
     @Override
     public void onBindViewHolder(AccesViewHolder holder, int position) {
         holder.setPorte(listeAcces.get(position));
-        holder.remplirSpinner(listePiecesToStringArray(listePieces));
+        holder.remplirSpinner(listePieces);
     }
 
     @Override
     public int getItemCount() {
         return listeAcces.size();
-    }
-
-    public ArrayList<String> listePiecesToStringArray(ArrayList<Piece> listePieces) {
-        ArrayList<String> listePiecesString = new ArrayList<>();
-        for (Piece piece : listePieces) {
-            listePiecesString.add(piece.getNomPiece());
-        }
-        return listePiecesString;
     }
 
 }

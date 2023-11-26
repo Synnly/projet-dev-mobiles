@@ -12,13 +12,12 @@ import fernandes_dos_santos_dev_mob.exceptions.mur.ExceptionPortesSeSuperposent;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "idMur")
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "IDMur")
 public class Mur {
     public static final int NORD = 0;
     public static final int EST = 1;
     public static final int SUD = 2;
     public static final int OUEST = 3;
-
     private int idMur;
     private int orientation;
     private byte[] binaireImage;

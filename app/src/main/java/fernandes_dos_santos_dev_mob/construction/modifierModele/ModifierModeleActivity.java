@@ -1,12 +1,9 @@
 package fernandes_dos_santos_dev_mob.construction.modifierModele;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.Environment;
-import android.provider.DocumentsContract;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -14,13 +11,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.fernandes_dos_santos_dev_mob.R;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import fernandes_dos_santos_dev_mob.construction.Utils.FilesUtils;
 import fernandes_dos_santos_dev_mob.construction.camera.CameraActivity;
 import fernandes_dos_santos_dev_mob.construction.modifierAcces.ModifierAccesActivity;
@@ -29,7 +24,10 @@ import fernandes_dos_santos_dev_mob.donnees.Modele;
 import fernandes_dos_santos_dev_mob.donnees.Mur;
 import fernandes_dos_santos_dev_mob.donnees.Piece;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class ModifierModeleActivity extends AppCompatActivity {
 
@@ -37,6 +35,7 @@ public class ModifierModeleActivity extends AppCompatActivity {
     private int indicePiecePhoto, orientationPhoto;
     private String path;
     private final static int INTENT_PRENDRE_PHOTO = 1;
+    private final static int INTENT_MODIFIER_ACCES = 2;
 
 
     @Override
@@ -57,7 +56,7 @@ public class ModifierModeleActivity extends AppCompatActivity {
             }
         }
         else {
-            modele = new Modele();
+            modele = new Modele(getIntent().getStringExtra("nom"));
             path = modele.getNomModele()+".json";
         }
 
@@ -89,6 +88,20 @@ public class ModifierModeleActivity extends AppCompatActivity {
             case INTENT_PRENDRE_PHOTO:
                 if(resultCode == RESULT_OK) { // Si une photo a été prise
                     ouvrirPhoto();
+                }
+                break;
+
+            case INTENT_MODIFIER_ACCES:
+                if(resultCode == RESULT_OK){
+                    try {
+                        Modele modeleTemp = FilesUtils.chargerModele(this, path);
+                        if(modeleTemp != null) {
+                            modeleEnModification = new Modele(modeleTemp);
+                        }
+                    } catch (IOException e) {
+                        System.out.println(e);
+                        //Toast.makeText(this, "Erreur lors de la lecture du modèle", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 break;
         }
@@ -226,6 +239,6 @@ public class ModifierModeleActivity extends AppCompatActivity {
         intent.putExtra("idPiece", idPiece);
         intent.putExtra("orientation", orientation);
         intent.putExtra("path", path);
-        startActivityForResult(intent, 1);
+        startActivityForResult(intent, INTENT_MODIFIER_ACCES);
     }
 }

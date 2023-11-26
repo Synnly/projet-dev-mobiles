@@ -59,6 +59,7 @@ public class PorteTest extends TestCase {
             assert(("Le rectangle de la porte "+porte1.getIdPorte()+" est null").equals(e.getMessage())):"Erreur : l'exception n'a pas le bon message d'erreur";
         }
         catch (Exception e){
+            System.out.println(e);
             fail("Erreur : valider() ne lance pas l'exception ExceptionNombreRectangleInvalide quand le nombre de murs =/= 2");
         }
     }
