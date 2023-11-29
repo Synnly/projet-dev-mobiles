@@ -204,7 +204,6 @@ public class ModifierAccesActivity extends AppCompatActivity {
      */
     public void valider(View view){
         try {
-            System.out.println(modele.toJSON());
             FilesUtils.ecrireTexte(this, modele.toJSON(), path);
         } catch (IOException e) {
             Toast.makeText(this, "Erreur lors de la sauvegarde du modèle", Toast.LENGTH_SHORT).show();

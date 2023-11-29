@@ -99,8 +99,7 @@ public class ModifierModeleActivity extends AppCompatActivity {
                             modeleEnModification = new Modele(modeleTemp);
                         }
                     } catch (IOException e) {
-                        System.out.println(e);
-                        //Toast.makeText(this, "Erreur lors de la lecture du modèle", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Erreur lors de la lecture du modèle", Toast.LENGTH_SHORT).show();
                     }
                 }
                 break;
