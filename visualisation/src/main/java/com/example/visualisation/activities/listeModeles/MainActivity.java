@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.R;
-import com.example.visualisation.activities.visualisation.VisualiserActivity;
+import com.example.visualisation.activities.pieceDepart.ChoisirPieceDepartActivity;
 import com.example.visualisation.donnees.Modele;
 import com.example.visualisation.filesUtils.FilesUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> chemins;
     private ArrayList<Modele> listeModeles;
     private RecyclerView recyclerView;
+    private int indiceModele;
     private static final int REQUEST_CHEMINS = 0;
     private static final int REQUEST_FICHIER = 1;
     private static final String URI_FICHIER_CHEMINS = "content://com.example.fernandes_dos_santos_dev_mob.fileprovider/modeles/chemins.txt";
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         chemins = new ArrayList<>();
         listeModeles = new ArrayList<>();
+        indiceModele = 0;
         chargerChemins();
         creerRecyclerView();
     }
@@ -61,14 +63,18 @@ public class MainActivity extends AppCompatActivity {
                         BufferedReader br = new BufferedReader(isr);
                         String buffer = "";
                         while ((buffer = br.readLine()) != null) {
-                            cheminsFichier.add(buffer);
+                            if(!cheminsFichier.contains(buffer)) {
+                                cheminsFichier.add(buffer);
+                            }
                         }
                         is.close();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
                     chemins = cheminsFichier;
-                    chargerJSON();
+                    if(!chemins.isEmpty()) { // On charge le premier fichier JSON de la liste
+                        chargerJSON(chemins.get(0));
+                    }
                     break;
                 }
 
@@ -82,25 +88,29 @@ public class MainActivity extends AppCompatActivity {
                         throw new RuntimeException(e);
                     }
                     creerRecyclerView();
+                    indiceModele++;
+                    if(indiceModele < chemins.size()) { // On charge le fichier JSON suivant
+                        String chemin = chemins.get(indiceModele);
+                        chargerJSON(chemin);
+                    }
                 }
             }
         }
     }
 
     /**
-     * Demande à l'application construction les différents modeles et les charge dans la liste des chemins
+     * Demande à l'application construction le fichier JSON de chemin path
      */
-    public void chargerJSON(){
-        for(String chemin : chemins) {
-            Intent requestFileIntent = new Intent(Intent.ACTION_PICK);
-            requestFileIntent.setPackage("com.example.fernandes_dos_santos_dev_mob");
-            requestFileIntent.setDataAndType(Uri.parse(URI_DOSSIER_JSON + chemin), "text/json");
-            startActivityForResult(requestFileIntent, REQUEST_FICHIER);
-        }
+    public void chargerJSON(String path){
+        Intent requestFileIntent = new Intent(Intent.ACTION_PICK);
+        requestFileIntent.setPackage("com.example.fernandes_dos_santos_dev_mob");
+        System.out.println(URI_DOSSIER_JSON + path);
+        requestFileIntent.setDataAndType(Uri.parse(URI_DOSSIER_JSON + path), "text/json");
+        startActivityForResult(requestFileIntent, REQUEST_FICHIER);
     }
 
     /**
-     * Demande à l'application construction le fichier contenant les chemins
+     * Demande à l'application construction le fichier contenant les chemins des modèles
      */
     public void chargerChemins(){
         Intent requestFileIntent = new Intent(Intent.ACTION_PICK);
@@ -134,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Créer le RecyclerView des modèles. Reinitialise le compteur d'ids de modeles
+     * Créer le RecyclerView des modèles.
      */
     public void creerRecyclerView(){
         recyclerView = findViewById(R.id.recyclerViewModeles);
@@ -143,8 +153,12 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
     }
 
-    public void changerActiviteVisualiserActivity(int indice){
-        Intent intent = new Intent(this, VisualiserActivity.class);
+    /**
+     * Change l'activité pour celle de choix de la pièce de départ
+     * @param indice L'indice du modèle à visualiser
+     */
+    public void changerActiviteChoisirPieceDepartActivity(int indice){
+        Intent intent = new Intent(this, ChoisirPieceDepartActivity.class);
         intent.putExtra("path", listeModeles.get(indice).getNomModele()+".json");
         startActivity(intent);
     }

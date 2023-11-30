@@ -17,10 +17,12 @@ public class VisualiserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_visualiser);
         String path = getIntent().getStringExtra("path");
+        int indice = getIntent().getIntExtra("indice", 0);
         try {
             modele = FilesUtils.chargerModele(this, path);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
 }

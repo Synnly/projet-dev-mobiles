@@ -24,15 +24,22 @@ public class ModeleAdapter extends RecyclerView.Adapter<ModeleAdapter.ModeleView
             boutonModifierModele.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ((MainActivity) view.getContext()).changerActiviteVisualiserActivity(getAdapterPosition());
+                    ((MainActivity) view.getContext()).changerActiviteChoisirPieceDepartActivity(getAdapterPosition());
                 }
             });
         }
 
-        public void setPiece(Modele m){
+        /**
+         * Modifie le modèle.
+         * @param m le nouveau modèle.
+         */
+        public void setModele(Modele m){
             this.modele = m;
         }
 
+        /**
+         * Retourne le modèle.
+         */
         public AppCompatButton getBouton(){
             return boutonModifierModele;
         }
