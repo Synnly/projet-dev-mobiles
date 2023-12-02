@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
 
         listeModeles = new ArrayList<>();
         cheminsModeles = new ArrayList<>();
+
+        // Chargement des chemins des modèles
         if(new File(this.getFilesDir(), "chemins.txt").exists()){
             try {
                 cheminsModeles = FilesUtils.chargerChemins(this, "chemins.txt");
@@ -65,7 +67,9 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         resetFabriqueIdModeles();
         if(resultCode == RESULT_OK) {
-            cheminsModeles.set(indiceModele, data.getStringExtra("path"));
+
+            // Chargement du modèle modifié
+            cheminsModeles.set(indiceModele, data.getStringExtra("path")); // On met à jour le chemin du modèle
             enregistrerChemins();
             try {
                 cheminsModeles = FilesUtils.chargerChemins(this, "chemins.txt");
@@ -90,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Crée un nouveau modele
+     * Crée un nouveau modele et l'ajoute à la liste des modèles. Met à jour le RecyclerView
      * @param view La vue
      */
     public void nouveauModele(View view){

@@ -15,6 +15,7 @@ public class ModeleAdapter extends RecyclerView.Adapter<ModeleAdapter.ModeleView
     private ArrayList<Modele> listeModeles;
 
     public static class ModeleViewHolder extends RecyclerView.ViewHolder {
+
         private Modele modele;
         private AppCompatButton boutonModifierModele;
 
@@ -29,10 +30,17 @@ public class ModeleAdapter extends RecyclerView.Adapter<ModeleAdapter.ModeleView
             });
         }
 
-        public void setPiece(Modele m){
+        /**
+         * Modifie le modele de la ligne
+         * @param m le nouveau modele
+         */
+        public void setModele(Modele m){
             this.modele = m;
         }
 
+        /**
+         * Retourne le bouton de la ligne
+         */
         public AppCompatButton getBouton(){
             return boutonModifierModele;
         }

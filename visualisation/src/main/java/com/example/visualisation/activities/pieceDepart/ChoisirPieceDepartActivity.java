@@ -21,6 +21,8 @@ public class ChoisirPieceDepartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choisir_piece_depart);
+
+        // Chargement du modèle
         modele = new Modele();
         String path = getIntent().getStringExtra("path");
         try {
@@ -43,7 +45,7 @@ public class ChoisirPieceDepartActivity extends AppCompatActivity {
     }
 
     /**
-     * Change l'activité pour celle de la visualisation
+     * Change l'activité pour celle de la visualisation et envoie l'indice de la pièce de départ et le chemin du modèle
      * @param indice L'indice de la pièce de départ dans la liste de pièces du modèle
      */
     public void changerActiviteVisualiserActivity(int indice){

@@ -1,12 +1,10 @@
 package com.example.visualisation.donnees;
 
 import android.graphics.Rect;
-import androidx.annotation.NonNull;
 import com.example.visualisation.exceptions.piece.ExceptionNombreMursInvalide;
 import com.example.visualisation.exceptions.piece.ExceptionPiecesReliesParPlusieursMurs;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,6 +41,9 @@ public class Piece {
         modele.ajouterPiece(this);
     }
 
+    /**
+     * Constructeur par defaut d'une pièce. Utilisé par Jackson pour la désérialisation. <br/><u>NE PAS UTILISER DANS LE CODE<u/>
+     */
     public Piece(){
         this.idPiece = FabriqueIDs.getinstance().getIDPiece();
         this.nomPiece = "Piece " + this.idPiece;
@@ -210,12 +211,5 @@ public class Piece {
      */
     public boolean porteOrientationExiste(int orientation){
         return getMur(orientation) != null && !getMur(orientation).getListePortes().isEmpty();
-    }
-
-    @NonNull
-    @NotNull
-    @Override
-    public String toString() {
-        return nomPiece;
     }
 }

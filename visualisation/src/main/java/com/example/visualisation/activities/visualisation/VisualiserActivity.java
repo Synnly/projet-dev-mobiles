@@ -41,6 +41,7 @@ public class VisualiserActivity extends AppCompatActivity {
         textViewNomPiece = findViewById(R.id.textViewNomPiece);
         surfaceView = findViewById(R.id.surfaceViewPiece);
 
+        // Chargement du modèle
         try {
             modele = FilesUtils.chargerModele(this, getIntent().getStringExtra("path"));
             piece = modele.getListePieces().get(getIntent().getIntExtra("indice", 0)); // Piece de départ
@@ -53,12 +54,13 @@ public class VisualiserActivity extends AppCompatActivity {
         surfaceView.setZOrderOnTop(true);
         surfaceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
 
+        // Creation de l'ecouteur pour les clics sur les acces
         surfaceView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 for(Porte porte : piece.getMur(orientation).getListePortes()){
                     if(scaledRectangle(porte.getRectangle()).contains((int) event.getX(),(int) event.getY())){
-                        goTo(porte.getPieceArrivee(), orientation);
+                        goTo(porte.getPieceArrivee());
                         return true;
                     }
                 }
@@ -67,6 +69,10 @@ public class VisualiserActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Charge l'image de la piece et dessine les acces sur la surfaceView
+     * @param orientation L'orientation du mur sur lequel se situe l'image
+     */
     public void chargerImage(int orientation){
         Bitmap b = piece.getMur(orientation).getImageBitmap();
         imageView.setImageBitmap(b);
@@ -110,6 +116,9 @@ public class VisualiserActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Crée les peintures pour dessiner les acces
+     */
     public void creerPeinture(){
         peintureBleue = new Paint(Paint.ANTI_ALIAS_FLAG);
         peintureBleue.setColor(Color.argb(64, 0, 128, 255));
@@ -160,6 +169,11 @@ public class VisualiserActivity extends AppCompatActivity {
         return dp * getResources().getDisplayMetrics().density;
     }
 
+    /**
+     * Renvoie un rectangle agrandi ou retreci en fonction des dimensions de celui ci lors de sa creation
+     * @param rectangle Le rectangle à modifier
+     * @return Le rectangle modifié
+     */
     public Rect scaledRectangle(Rect rectangle){
         int left = (int) ((rectangle.left / dpToPx(WIDTH_SCREEN)) * surfaceView.getWidth());
         int top = (int) ((rectangle.top / dpToPx(HEIGHT_SCREEN)) * surfaceView.getHeight());
@@ -168,9 +182,12 @@ public class VisualiserActivity extends AppCompatActivity {
         return new Rect(left, top, right, bottom);
     }
 
-    public void goTo(Piece piece, int orientation){
+    /**
+     * Change la piece de la vue
+     * @param piece La nouvelle piece
+     */
+    public void goTo(Piece piece){
         this.piece = piece;
-        this.orientation = orientation;
         textViewNomPiece.setText(piece.getNomPiece());
         chargerImage(orientation);
     }

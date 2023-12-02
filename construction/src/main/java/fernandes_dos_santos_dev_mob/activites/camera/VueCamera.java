@@ -28,15 +28,16 @@ public class VueCamera extends SurfaceView implements SurfaceHolder.Callback {
         if(this.getResources().getConfiguration().orientation != Configuration.ORIENTATION_PORTRAIT) {
             parametres.set("orientation", "portrait");
         }
-
+        // Paramètres de la caméra
         parametres.setPictureFormat(ImageFormat.JPEG);
         parametres.setPictureSize(1600, 1200);
         parametres.setPreviewSize(640, 480);
         parametres.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
         camera.setDisplayOrientation(90);
         parametres.setRotation(90);
-
         camera.setParameters(parametres);
+
+        // Affichage de la previsualisation
         try {
             camera.setPreviewDisplay(holder);
             camera.startPreview();
@@ -48,7 +49,6 @@ public class VueCamera extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
-
     }
 
     @Override

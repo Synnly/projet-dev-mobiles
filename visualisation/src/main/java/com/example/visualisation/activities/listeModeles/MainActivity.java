@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,13 +46,13 @@ public class MainActivity extends AppCompatActivity {
 
         if (resultCode == RESULT_OK && data != null) {
 
+            // Ouverture du fichier
             Uri returnUri = data.getData();
             try {
                 pfd = getContentResolver().openFileDescriptor(returnUri, "r");
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
-
             FileDescriptor fd = pfd.getFileDescriptor();
             InputStream is = new FileInputStream(fd);
 
@@ -89,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     creerRecyclerView();
                     indiceModele++;
-                    if(indiceModele < chemins.size()) { // On charge le fichier JSON suivant
+                    if(indiceModele < chemins.size()) {  // On charge le fichier JSON suivant de la liste si il y en a un
                         String chemin = chemins.get(indiceModele);
                         chargerJSON(chemin);
                     }
@@ -153,12 +154,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Change l'activité pour celle de choix de la pièce de départ
+     * Change l'activité pour celle de choix de la pièce de départ et passe le chemin du modèle à visualiser si le modèle est valide
      * @param indice L'indice du modèle à visualiser
      */
     public void changerActiviteChoisirPieceDepartActivity(int indice){
-        Intent intent = new Intent(this, ChoisirPieceDepartActivity.class);
-        intent.putExtra("path", listeModeles.get(indice).getNomModele()+".json");
-        startActivity(intent);
+        try{
+            listeModeles.get(indice).valider();
+            Intent intent = new Intent(this, ChoisirPieceDepartActivity.class);
+            intent.putExtra("path", listeModeles.get(indice).getNomModele()+".json");
+            startActivity(intent);
+        }
+        catch (Exception e){
+            Toast.makeText(this, "Erreur : "+e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 }

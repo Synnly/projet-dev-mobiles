@@ -24,9 +24,8 @@ public class Porte {
 
     /*
     Une entité divine doit surement me hair
-    Ce parametre ne sert a rien mais pour une raison qui m'échappe si je la retire
-    jackson inclus l'objet android.graphics.Rect dans le json et un attribut "empty" est ajouté
-    alors qu'il n'existe pas dans la classe Rect
+    Ce parametre ne sert a rien mais pour une raison qui m'échappe si je la retire jackson inclus l'objet android.graphics.Rect
+    dans le json et un attribut "empty" est ajouté alors qu'il n'existe pas dans la classe Rect et casse la deserialisation
     :shrug:
      */
     @JsonIgnore
@@ -61,6 +60,9 @@ public class Porte {
         this.pieceArrivee = null;
     }
 
+    /**
+     * Constructeur par defaut d'une porte. Utilisé par Jackson pour la désérialisation. <br/><u>NE PAS UTILISER DANS LE CODE<u/>
+     */
     public Porte(){
         this.idPorte = FabriqueIDs.getinstance().getIDPorte();
         this.murDepart = null;
@@ -128,51 +130,93 @@ public class Porte {
         }
     }
 
+    /**
+     * Renvoie la piece d'arrivée de la porte
+     */
     public Piece getPieceArrivee() {
         return pieceArrivee;
     }
 
+    /**
+     * Modifie la piece d'arrivée de la porte
+     * @param pieceArrivee La piece d'arrivée de la porte
+     */
     public void setPieceArrivee(Piece pieceArrivee) {
         this.pieceArrivee = pieceArrivee;
         this.idPieceArrivee = (pieceArrivee == null ? -1 : pieceArrivee.getIdPiece());
     }
 
+    /**
+     * Modifie l'identifiant de la piece d'arrivée de la porte
+     * @param idPieceArrivee L'identifiant de la piece d'arrivée de la porte
+     */
     public void setIdPieceArrivee(int idPieceArrivee) {
         this.idPieceArrivee = idPieceArrivee;
     }
 
+    /**
+     * Renvoie l'identifiant de la piece d'arrivée de la porte
+     */
     public int getIdPieceArrivee(){
         return idPieceArrivee;
     }
 
+    /**
+     * Renvoie la coordonnée x du coin gauche du rectangle de la porte
+     */
     public int getLeft() {
         return left;
     }
 
+    /**
+     * Modifie la coordonnée x du coin gauche du rectangle de la porte
+     * @param left La coordonnée x du coin gauche du rectangle de la porte
+     */
     public void setLeft(int left) {
         this.left = left;
     }
 
+    /**
+     * Renvoie la coordonnée y du coin supérieur du rectangle de la porte
+     */
     public int getTop() {
         return top;
     }
 
+    /**
+     * Modifie la coordonnée y du coin supérieur du rectangle de la porte
+     * @param top La coordonnée y du coin supérieur du rectangle de la porte
+     */
     public void setTop(int top) {
         this.top = top;
     }
 
+    /**
+     * Renvoie la coordonnée x du coin droit du rectangle de la porte
+     */
     public int getRight() {
         return right;
     }
 
+    /**
+     * Modifie la coordonnée x du coin droit du rectangle de la porte
+     * @param right La coordonnée x du coin droit du rectangle de la porte
+     */
     public void setRight(int right) {
         this.right = right;
     }
 
+    /**
+     * Renvoie la coordonnée y du coin inférieur du rectangle de la porte
+     */
     public int getBottom() {
         return bottom;
     }
 
+    /**
+     * Modifie la coordonnée y du coin inférieur du rectangle de la porte
+     * @param bottom La coordonnée y du coin inférieur du rectangle de la porte
+     */
     public void setBottom(int bottom) {
         this.bottom = bottom;
     }

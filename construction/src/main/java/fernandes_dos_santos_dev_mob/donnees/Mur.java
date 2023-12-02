@@ -3,11 +3,11 @@ package fernandes_dos_santos_dev_mob.donnees;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
-import fernandes_dos_santos_dev_mob.exceptions.mur.ExceptionPortesSeSuperposent;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import fernandes_dos_santos_dev_mob.exceptions.mur.ExceptionPortesSeSuperposent;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -54,6 +54,9 @@ public class Mur {
         this.piece = p;
     }
 
+    /**
+     * Constructeur d'un mur. Utilisé par Jackson pour la désérialisation. <br/><u>NE PAS UTILISER DANS LE CODE<u/>
+     */
     public Mur(@JsonProperty("idMur") int id, @JsonProperty("orientation") int orientation, @JsonProperty("binaireImage") byte[] binaireImage, @JsonProperty("piece") Piece piece, @JsonProperty("listePortes") ArrayList<Porte> listePortes) {
         this.idMur = id;
         this.orientation = orientation;
@@ -93,7 +96,7 @@ public class Mur {
     }
 
     /**
-     * Assigne une bitmap au mur en utilisant
+     * Assigne une bitmap au mur
      * @param image Le bitmap à assigner
      */
     public void setBitmap(Bitmap image) {
@@ -164,14 +167,4 @@ public class Mur {
             }
         }
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Mur mur = (Mur) o;
-        return idMur == mur.idMur;
-    }
-
 }
-

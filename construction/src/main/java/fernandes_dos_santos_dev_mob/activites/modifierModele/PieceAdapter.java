@@ -27,17 +27,21 @@ public class PieceAdapter extends RecyclerView.Adapter<PieceAdapter.PieceViewHol
 
         public PieceViewHolder(View view) {
             super(view);
+
+            // Vues des images
             imageNord = view.findViewById(R.id.imageNord);
             imageEst = view.findViewById(R.id.imageEst);
             imageSud = view.findViewById(R.id.imageSud);
             imageOuest = view.findViewById(R.id.imageOuest);
             nomPiece = view.findViewById(R.id.texteNomPiece);
 
+            // Vues des boutons
             bouttonNord = view.findViewById(R.id.boutonPhotoNord);
             bouttonEst = view.findViewById(R.id.boutonPhotoEst);
             bouttonSud = view.findViewById(R.id.boutonPhotoSud);
             bouttonOuest = view.findViewById(R.id.boutonPhotoOuest);
 
+            // Ecouteur du nom de la pièce
             nomPiece.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -52,41 +56,68 @@ public class PieceAdapter extends RecyclerView.Adapter<PieceAdapter.PieceViewHol
                     }
                 }
             });
+
+            // Ecouteurs des boutons pour prendre une photo
             creerEcouteurButtonPhoto(bouttonNord, Mur.NORD);
             creerEcouteurButtonPhoto(bouttonEst, Mur.EST);
             creerEcouteurButtonPhoto(bouttonSud, Mur.SUD);
             creerEcouteurButtonPhoto(bouttonOuest, Mur.OUEST);
 
+            // Ecouteurs des boutons pour modifier les accès
             creerEcouteurButtonAcces(imageNord, Mur.NORD);
             creerEcouteurButtonAcces(imageEst, Mur.EST);
             creerEcouteurButtonAcces(imageSud, Mur.SUD);
             creerEcouteurButtonAcces(imageOuest, Mur.OUEST);
         }
 
+        /**
+         * Met à jour la pièce
+         * @param p la pièce
+         */
         public void setPiece(Piece p){
             this.piece = p;
         }
 
+        /**
+         * Renvoie le bouton de l'image du mur nord
+         */
         public Button getImageNord() {
             return imageNord;
         }
 
+        /**
+         * Renvoie le bouton de l'image du mur est
+         */
         public Button getImageEst() {
             return imageEst;
         }
 
+        /**
+         * Renvoie le bouton de l'image du mur sud
+         */
         public Button getImageSud() {
             return imageSud;
         }
 
+        /**
+         * Renvoie le bouton de l'image du mur ouest
+         */
         public Button getImageOuest() {
             return imageOuest;
         }
 
+        /**
+         * Renvoie la vue du texte du nom de la pièce
+         */
         public TextView getNomPiece() {
             return nomPiece;
         }
 
+        /**
+         * Crée un écouteur pour le bouton de prise de photo
+         * @param view la vue du bouton
+         * @param orientation l'orientation du mur
+         */
         public void creerEcouteurButtonPhoto(View view, int orientation){
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -96,6 +127,11 @@ public class PieceAdapter extends RecyclerView.Adapter<PieceAdapter.PieceViewHol
             });
         }
 
+        /**
+         * Crée un écouteur pour le bouton de modification des accès
+         * @param view la vue du bouton
+         * @param orientation l'orientation du mur
+         */
         public void creerEcouteurButtonAcces(View view, int orientation){
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -121,7 +157,7 @@ public class PieceAdapter extends RecyclerView.Adapter<PieceAdapter.PieceViewHol
         holder.getNomPiece().setText(listePieces.get(position).getNomPiece());
         holder.setPiece(listePieces.get(position));
 
-
+        // Affichage des images des murs
         if(listePieces.get(position).getMur(Mur.NORD) != null){
             BitmapDrawable image = new BitmapDrawable(holder.itemView.getContext().getResources(), listePieces.get(position).getMur(Mur.NORD).getImageBitmap());
             holder.getImageNord().setBackground(image);

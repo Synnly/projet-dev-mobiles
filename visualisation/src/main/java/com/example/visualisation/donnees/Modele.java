@@ -86,9 +86,8 @@ public class Modele {
         return null;
     }
 
-
     /**
-     * Verfiie si le modèle est valide. Un modèle est valide si toutes ses pièces sont valides et que toutes les pièces soient reliées. Voir Piece.valider() pour les exceptions provenant d'une pièce invalide
+     * Verfiie si le modèle est valide. Un modèle est valide si toutes ses pièces sont valides et si toutes les pièces sont reliées. Voir Piece.valider() pour les exceptions provenant d'une pièce invalide
      * @throws ExceptionAucunePiece Si le modèle ne contient aucune pièce
      * @throws ExceptionPiecesNonReliees Si le modèle contient des pièces non reliées
      */
@@ -116,10 +115,16 @@ public class Modele {
         }
     }
 
+    /**
+     * Renvoie la liste des pièces du modèle
+     */
     public ArrayList<Piece> getListePieces() {
         return listePieces;
     }
 
+    /**
+     * Renvoie le modele au format JSON
+     */
     public String toJSON(){
         ObjectMapper mapper = new ObjectMapper();
         try {

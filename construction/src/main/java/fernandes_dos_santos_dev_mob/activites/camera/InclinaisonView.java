@@ -59,10 +59,13 @@ public class InclinaisonView extends View {
 
     public void onDraw(Canvas canvas){
         vecteur = activiteCamera.getVecteurInclinaison();
+        // Repere horizontal
         canvas.drawLine(4, (float) getHeight()/2, getWidth()-4, (float) getHeight()/2, peintureGrisFonce);
+
         // Horizon
         canvas.drawLine((float) getWidth() /2, (float) getHeight() /2, (getWidth() /2)+(getWidth()*vecteur[0]), (getWidth() /2)+(getHeight()*vecteur[1]), peintureJaune);
         canvas.drawLine((float) getWidth() /2, (float) getHeight() /2, (getWidth() /2)+(getWidth()*-vecteur[0]), (getWidth() /2)+(getHeight()*-vecteur[1]), peintureJaune);
+
         // Contour
         canvas.drawCircle((float) getWidth() / 2, (float) getHeight() / 2, Math.min((getHeight()/2)-(int)(EPAISSEUR_CONTOUR*0.8), (getWidth()/2)-(int)(EPAISSEUR_CONTOUR*0.8)), peintureGris);
     }
@@ -110,6 +113,10 @@ public class InclinaisonView extends View {
         setMeasuredDimension(w, h);
     }
 
+    /**
+     * Permet de lier l'activité à la vue
+     * @param cameraActivity l'activité qui contient la vue
+     */
     public void setActiviteCamera(CameraActivity cameraActivity){
         this.activiteCamera = cameraActivity;
     }

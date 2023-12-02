@@ -36,6 +36,7 @@ public class ModifierModeleActivity extends AppCompatActivity {
     private String path;
     private final static int INTENT_PRENDRE_PHOTO = 1;
     private final static int INTENT_MODIFIER_ACCES = 2;
+    private final static int REQUEST_CODE_PERMISSIONS = 100;
 
 
     @Override
@@ -45,22 +46,23 @@ public class ModifierModeleActivity extends AppCompatActivity {
 
         // Récupération du modèle
         path = getIntent().getStringExtra("path");
-        if (path != null) {
+        if (path != null) { // Le modèle existe déjà
             try {
                 modele = FilesUtils.chargerModele(this, path);
             } catch (IOException e) {
                 Toast.makeText(this, "Erreur lors de la lecture du modèle", Toast.LENGTH_SHORT).show();
+                annuler(null);
             }
             if(modele==null){
                 modele = new Modele();
             }
         }
-        else {
+        else { // Création d'un nouveau modèle
             modele = new Modele(getIntent().getStringExtra("nom"));
             path = modele.getNomModele()+".json";
         }
 
-        modeleEnModification = new Modele(modele);
+        modeleEnModification = new Modele(modele); // Copie du modèle pour les modifications
 
         // Nom du modele
         EditText nomModele = findViewById(R.id.texteNomModele);
@@ -106,13 +108,13 @@ public class ModifierModeleActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
-        if(requestCode == 100){
-            if(grantResults.length > 0 && grantResults[0] == getPackageManager().PERMISSION_GRANTED){
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            if (grantResults.length > 0 && grantResults[0] == getPackageManager().PERMISSION_GRANTED) { // Permission accordée donc lancement de l'activité
                 Intent intentPhoto = new Intent(ModifierModeleActivity.this, CameraActivity.class);
                 startActivityForResult(intentPhoto, 1);
-            }
-            else{
+            } else {
                 Toast.makeText(ModifierModeleActivity.this, "Autorisation d'accéder à la caméra nécessaire", Toast.LENGTH_SHORT).show();
             }
         }
@@ -131,7 +133,7 @@ public class ModifierModeleActivity extends AppCompatActivity {
     }
 
     /**
-     * Ajoute une nouvelle pièce au modèle
+     * Ajoute une nouvelle pièce au modèle. Met à jour le RecyclerView
      * @param view la vue
      */
     public void nouvellePiece(View view){
@@ -169,20 +171,19 @@ public class ModifierModeleActivity extends AppCompatActivity {
                 throw new RuntimeException(e);
             }
 
-            // Mise à jour du RecyclerView
             creerRecyclerView();
         }
     }
 
     /**
-     * Lance l'intent de prise de photo pour le mur
+     * Lance l'intent de prise de photo pour le mur. Demande la permission si nécessaire
      * @param indice L'indice de la piece dans laquelle se trouve le mur
      * @param orientation L'orientation du mur
      */
     public void prendrePhotoMur(int indice, int orientation){
         // Demande des permissions
         if(ContextCompat.checkSelfPermission(ModifierModeleActivity.this, android.Manifest.permission.CAMERA) != getPackageManager().PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(ModifierModeleActivity.this, new String[]{android.Manifest.permission.CAMERA}, 100);
+            ActivityCompat.requestPermissions(ModifierModeleActivity.this, new String[]{android.Manifest.permission.CAMERA}, REQUEST_CODE_PERMISSIONS);
         }
         else{
             indicePiecePhoto = indice;
@@ -202,7 +203,7 @@ public class ModifierModeleActivity extends AppCompatActivity {
     }
 
     /**
-     * Valide les modifications du modèle et retourne à l'activité précédente
+     * Valide les modifications du modèle et retourne à l'activité précédente en fournissant le chemin du modèle
      * @param view la vue
      */
     public void valider(View view){

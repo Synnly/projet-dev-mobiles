@@ -41,9 +41,10 @@ public class ModifierAccesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modifier_acces);
-        path = getIntent().getStringExtra("path");
+
+        // Chargement du modele
         try {
-            modele = FilesUtils.chargerModele(this, path);
+            modele = FilesUtils.chargerModele(this, getIntent().getStringExtra("path"));
         } catch (IOException e) {
             Toast.makeText(this, "Erreur lors de la lecture du modèle", Toast.LENGTH_SHORT).show();
         }
@@ -67,6 +68,7 @@ public class ModifierAccesActivity extends AppCompatActivity {
         }
         listePortes = murActuel.getListePortes();
 
+        // Affichage de l'image du mur
         BitmapDrawable image = new BitmapDrawable(getResources(), murActuel.getImageBitmap());
         ((ImageView) findViewById(R.id.imageMur)).setImageDrawable(image);
 
@@ -80,6 +82,7 @@ public class ModifierAccesActivity extends AppCompatActivity {
 
         creerPeintures();
 
+        // Initialisation de l'ecouteur
         imageView = findViewById(R.id.imageMur);
         imageView.setOnTouchListener(creerEcouteur(surfaceDessin, surfaceHolderDessin, peintureBleue));
 
@@ -117,7 +120,7 @@ public class ModifierAccesActivity extends AppCompatActivity {
                 }
 
                 if(appuieSurEcran) {
-                    if (event.getPointerCount() == 2) {
+                    if (event.getPointerCount() == 2) { // Dessin du rectangle entre les deux pointeurs
                         nbContacts = event.getPointerCount();
                         rectangle = creerRectangle(event, surfaceDessin);
                         rectangle.sort();
@@ -127,7 +130,7 @@ public class ModifierAccesActivity extends AppCompatActivity {
                 else {
                     clearCanvas(surfaceHolderDessin);
 
-                    if (nbContacts == 2) {
+                    if (nbContacts == 2) { // Les deux pointeurs etaient sur l'ecran lors du relachement
                         if (pointeur1X - pointeur2X == 0 || pointeur1Y - pointeur2Y == 0) {
                             Toast.makeText(ModifierAccesActivity.this, "La zone d'acces est invalide.", Toast.LENGTH_SHORT).show();
                         }
@@ -148,7 +151,7 @@ public class ModifierAccesActivity extends AppCompatActivity {
     }
 
     /**
-     * Cree un rectangle en fonction des coordonnees des pointeurs. Les coordonnees sont limitees par la taille de la surface de dessin
+     * Cree un rectangle en fonction des coordonnees des pointeurs. Les coordonnees sont limitees par la taille de la surface de dessin et sont ordonnees
      * @param event L'evenement
      * @param surfaceDessin La surface de dessin
      * @return Le rectangle
@@ -163,7 +166,7 @@ public class ModifierAccesActivity extends AppCompatActivity {
     }
 
     /**
-     * Nettoie le canvas de la surface de dessin
+     * Nettoie le canvas de la surface de dessin et dessine les zones d'acces
      * @param surfaceHolderDessin Le holder de la surface de dessin
      */
     public void clearCanvas(SurfaceHolder surfaceHolderDessin){
@@ -174,7 +177,7 @@ public class ModifierAccesActivity extends AppCompatActivity {
     }
 
     /**
-     * Nettoie le canvas de la surface de dessin et dessine le rectangle
+     * Nettoie le canvas de la surface de dessin et dessine le rectangle en parametre
      * @param rectangle Le rectangle
      * @param surfaceHolderDessin Le holder de la surface de dessin
      */

@@ -42,16 +42,20 @@ public class CameraActivity extends AppCompatActivity {
         vueCamera = new VueCamera(this, camera);
         frameLayout.addView(vueCamera);
 
+        // Callback de la prise de photo
         photoCallBack = new Camera.PictureCallback() {
             @Override
             public void onPictureTaken(byte[] data, Camera camera) {
                 FileOutputStream fos;
                 try {
+                    // Sauvegarde de la photo
                     fos = openFileOutput("bitmap.data", MODE_PRIVATE);
                     Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 30, fos);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 30, fos); // Compression de la photo (ici 30 mais franchement j'ai pas l'impression que le poids de l'image diminue significativement)
                     fos.flush();
-                    terminerActivite(RESULT_OK);
+                    fos.close();
+
+                    terminerActivite(RESULT_OK); // Retour à l'activité précédente
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -61,13 +65,14 @@ public class CameraActivity extends AppCompatActivity {
 
     /**
      * Retourne l'état de la caméra
+     * @return true si la caméra est active, false sinon
      */
     public boolean isCameraActif() {
         return cameraActif;
     }
 
     /**
-     * Retourne le vecteur d'orientation. [0] = X, [1] = Y
+     * Retourne le vecteur d'inclinaison. [0] = X, [1] = Y
      */
     public float[] getVecteurInclinaison() {
         return vecteurInclinaison;
@@ -82,21 +87,26 @@ public class CameraActivity extends AppCompatActivity {
         float matriceRotationRetournee[] = new float[9];
         float[] temp = new float[2];
 
+        // Remappage des axes
         SensorManager.remapCoordinateSystem(matriceRotationR, SensorManager.AXIS_X, SensorManager.AXIS_Z, matriceRotationRetournee);
         SensorManager.getOrientation(matriceRotationRetournee, vecteurInclinaison);
 
+        // Calcul du vecteur d'inclinaison actuel
         temp[0] = (float) (Math.sin(vecteurInclinaison[2]+Math.PI/2)/Math.PI);
         temp[1] = (float) (Math.cos(vecteurInclinaison[2]+Math.PI/2)/Math.PI);
 
+        // Lissage
         vecteurInclinaison[0] = (float) ((Math.sin(vecteurInclinaison[2]+Math.PI/2)/Math.PI) + vecteurInclinaisonPrecedent[0])/2;
         vecteurInclinaison[1] = (float) ((Math.cos(vecteurInclinaison[2]+Math.PI/2)/Math.PI) + vecteurInclinaisonPrecedent[1])/2;
 
+        // Sauvegarde du vecteur d'inclinaison actuel pour le lissage suivant
         vecteurInclinaisonPrecedent[0] = temp[0];
         vecteurInclinaisonPrecedent[1] = temp[1];
     }
 
     /**
-     * Calcule l'orientation en degrés. Le resultat est "lissé" en retournant la moyenne entre l'angle precédent et la mesure actuelle. Le système de coordonnées est remappé pour celui de base
+     * Calcule l'orientation en degrés. Le resultat est "lissé" en retournant la moyenne entre l'angle precédent et la mesure actuelle. <br/>
+     * /!\ Le système de coordonnées est remappé pour celui de base
      * @return L'orientation
      */
     public float calculerOrientation(){
@@ -104,18 +114,20 @@ public class CameraActivity extends AppCompatActivity {
         float matriceRotationRetournee[] = new float[9];
         float temp;
 
+        // Remappage des axes
         SensorManager.remapCoordinateSystem(matriceRotationR, SensorManager.AXIS_X, SensorManager.AXIS_Y, matriceRotationRetournee);
         SensorManager.getOrientation(matriceRotationRetournee, vecteurOrientation);
-        temp = orientationPrecedent;
 
-        orientationPrecedent = (float) Math.round(Math.toDegrees(vecteurOrientation[0]));
-        return (orientationPrecedent+temp)/2;
+        temp = orientationPrecedent;
+        orientationPrecedent = (float) Math.round(Math.toDegrees(vecteurOrientation[0])); // Calcul de l'orientation actuelle et sauvegarde pour le lissage suivant
+
+        return (orientationPrecedent+temp)/2; // Lissage et retour de l'orientation
     }
 
     /**
      * Retourne le cardinal correspondant à l'angle.
      * @param angle L'angle en degrés
-     * @return L'initiale du cardinal
+     * @return L'initiale du cardinal si compris entre 180° et -180°, N sinon
      */
     public String getCardinal(float angle){
         if(angle >= -45 && angle < 45){
@@ -147,13 +159,6 @@ public class CameraActivity extends AppCompatActivity {
         accelerometre = managerCapteurs.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         vecteurAcceleration = new float[3];
 
-        // Magnetometre
-        magnetometre = managerCapteurs.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-        vecteurMagnetisme = new float[3];
-        matriceRotationI = new float[9];
-        matriceRotationR = new float[9];
-        vecteurInclinaison = new float[3];
-
         ecouteurAccelerometre = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
@@ -163,6 +168,13 @@ public class CameraActivity extends AppCompatActivity {
             @Override
             public void onAccuracyChanged(Sensor sensor, int i) {}
         };
+
+        // Magnetometre
+        magnetometre = managerCapteurs.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        vecteurMagnetisme = new float[3];
+        matriceRotationI = new float[9];
+        matriceRotationR = new float[9];
+        vecteurInclinaison = new float[3];
 
         ecouteurMagnetometre = new SensorEventListener() {
             @Override
@@ -176,14 +188,17 @@ public class CameraActivity extends AppCompatActivity {
             @Override
             public void onAccuracyChanged(Sensor sensor, int i) {}
         };
+        // Demarrage des capteurs
         managerCapteurs.registerListener(ecouteurAccelerometre, accelerometre, 16666);
         managerCapteurs.registerListener(ecouteurMagnetometre, magnetometre, 16666);
+
+        // Dessin de l'inclinaison
         ((InclinaisonView) findViewById(R.id.inclinaisonView)).setActiviteCamera(this);
         ((InclinaisonView) findViewById(R.id.inclinaisonView)).dessiner();
     }
 
     /**
-     * Termine l'activité et désactive les capteurs
+     * Désactive les capteurs, termine l'activité, et retourne dans l'activité précédente
      */
     public void terminerActivite(int resultCode){
         cameraActif = false;
@@ -194,6 +209,10 @@ public class CameraActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Prend une photo
+     * @param view La vue
+     */
     public void prendrePhoto(View view){
         camera.takePicture(null, null, photoCallBack);
     }
