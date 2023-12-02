@@ -84,28 +84,24 @@ public class ModifierModeleActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
-            case INTENT_PRENDRE_PHOTO:
-                if(resultCode == RESULT_OK) { // Si une photo a été prise
+        if(resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case INTENT_PRENDRE_PHOTO:
                     ouvrirPhoto();
-                }
-                break;
+                    break;
 
-            case INTENT_MODIFIER_ACCES:
-                if(resultCode == RESULT_OK){
+                case INTENT_MODIFIER_ACCES:
                     try {
                         Modele modeleTemp = FilesUtils.chargerModele(this, path);
 
-                        if(modeleTemp != null) {
-                            System.out.println(modeleTemp.toJSON());
+                        if (modeleTemp != null) {
                             modeleEnModification = new Modele(modeleTemp);
-                            System.out.println(modeleEnModification.toJSON());
                         }
                     } catch (IOException e) {
                         Toast.makeText(this, "Erreur lors de la lecture du modèle", Toast.LENGTH_SHORT).show();
                     }
-                }
-                break;
+                    break;
+            }
         }
     }
 

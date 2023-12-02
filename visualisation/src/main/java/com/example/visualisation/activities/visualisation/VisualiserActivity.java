@@ -2,6 +2,7 @@ package com.example.visualisation.activities.visualisation;
 
 import android.graphics.*;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -34,7 +35,6 @@ public class VisualiserActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_visualiser);
-        String path = getIntent().getStringExtra("path");
         orientation = Mur.NORD;
         imageView = findViewById(R.id.imageViewPiece);
         textViewOrientation = findViewById(R.id.textViewOrientation);
@@ -42,16 +42,29 @@ public class VisualiserActivity extends AppCompatActivity {
         surfaceView = findViewById(R.id.surfaceViewPiece);
 
         try {
-            modele = FilesUtils.chargerModele(this, path);
-            System.out.println(modele.toJSON());
+            modele = FilesUtils.chargerModele(this, getIntent().getStringExtra("path"));
             piece = modele.getListePieces().get(getIntent().getIntExtra("indice", 0)); // Piece de départ
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         creerPeinture();
         textViewNomPiece.setText(piece.getNomPiece());
         surfaceView.setZOrderOnTop(true);
         surfaceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
+
+        surfaceView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                for(Porte porte : piece.getMur(orientation).getListePortes()){
+                    if(scaledRectangle(porte.getRectangle()).contains((int) event.getX(),(int) event.getY())){
+                        goTo(porte.getPieceArrivee(), orientation);
+                        return true;
+                    }
+                }
+                return true;
+            }
+        });
     }
 
     public void chargerImage(int orientation){
@@ -147,4 +160,18 @@ public class VisualiserActivity extends AppCompatActivity {
         return dp * getResources().getDisplayMetrics().density;
     }
 
+    public Rect scaledRectangle(Rect rectangle){
+        int left = (int) ((rectangle.left / dpToPx(WIDTH_SCREEN)) * surfaceView.getWidth());
+        int top = (int) ((rectangle.top / dpToPx(HEIGHT_SCREEN)) * surfaceView.getHeight());
+        int right = (int) ((rectangle.right / dpToPx(WIDTH_SCREEN)) * surfaceView.getWidth());
+        int bottom = (int) ((rectangle.bottom / dpToPx(HEIGHT_SCREEN)) * surfaceView.getHeight());
+        return new Rect(left, top, right, bottom);
+    }
+
+    public void goTo(Piece piece, int orientation){
+        this.piece = piece;
+        this.orientation = orientation;
+        textViewNomPiece.setText(piece.getNomPiece());
+        chargerImage(orientation);
+    }
 }
