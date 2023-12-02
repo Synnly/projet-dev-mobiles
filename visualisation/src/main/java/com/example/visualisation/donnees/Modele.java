@@ -74,6 +74,20 @@ public class Modele {
     }
 
     /**
+     * Renvoie la pièce ayant l'identifiant idPiece
+     * @param idPiece L'identifiant de la pièce
+     */
+    public Piece getPiece(int idPiece){
+        for(Piece p : this.listePieces){
+            if(p.getIdPiece() == idPiece){
+                return p;
+            }
+        }
+        return null;
+    }
+
+
+    /**
      * Verfiie si le modèle est valide. Un modèle est valide si toutes ses pièces sont valides et que toutes les pièces soient reliées. Voir Piece.valider() pour les exceptions provenant d'une pièce invalide
      * @throws ExceptionAucunePiece Si le modèle ne contient aucune pièce
      * @throws ExceptionPiecesNonReliees Si le modèle contient des pièces non reliées
@@ -81,10 +95,6 @@ public class Modele {
     public void valider() throws Exception {
         if(this.listePieces.isEmpty()){
             throw new ExceptionAucunePiece();
-        }
-
-        for (Piece piece : this.listePieces){
-            System.out.println(piece.getIdPiece());
         }
 
         // Si le modèle contient plus d'une pièce, on vérifie que chaque pièce est reliée à une autre pièce

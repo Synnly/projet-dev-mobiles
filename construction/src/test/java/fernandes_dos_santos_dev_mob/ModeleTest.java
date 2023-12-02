@@ -65,7 +65,6 @@ public class ModeleTest extends TestCase {
             modele.valider();
         }
         catch (Exception e){
-            System.out.println(e.getMessage());
             fail("Erreur : valider() lance une exception alors que le modèle est valide");
         }
 

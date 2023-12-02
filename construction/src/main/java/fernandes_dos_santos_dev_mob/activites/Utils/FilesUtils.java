@@ -3,6 +3,9 @@ package fernandes_dos_santos_dev_mob.activites.Utils;
 import android.content.Context;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fernandes_dos_santos_dev_mob.donnees.Modele;
+import fernandes_dos_santos_dev_mob.donnees.Mur;
+import fernandes_dos_santos_dev_mob.donnees.Piece;
+import fernandes_dos_santos_dev_mob.donnees.Porte;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -30,13 +33,24 @@ public class FilesUtils {
             // Lecture du fichier
             while ((buffer = br.readLine()) != null) {
                 builder.append(buffer);
+                builder.append("\n");
             }
-
             is.close();
             isr.close();
 
             // Creation du modele
-            return new ObjectMapper().readValue(builder.toString(), Modele.class);
+            Modele modele = new ObjectMapper().readValue(builder.toString(), Modele.class);
+
+            for(Piece p : modele.getListePieces()){
+                for(Mur m : p.getListeMurs()){
+                    for (Porte porte : m.getListePortes()) {
+                        if(porte.getIdPieceArrivee() > -1) {
+                            porte.setPieceArrivee(modele.getPiece(porte.getIdPieceArrivee()));
+                        }
+                    }
+                }
+            }
+            return modele;
         }
         return null;
     }

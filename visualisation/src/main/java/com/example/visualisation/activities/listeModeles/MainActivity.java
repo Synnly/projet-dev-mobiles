@@ -104,7 +104,6 @@ public class MainActivity extends AppCompatActivity {
     public void chargerJSON(String path){
         Intent requestFileIntent = new Intent(Intent.ACTION_PICK);
         requestFileIntent.setPackage("com.example.fernandes_dos_santos_dev_mob");
-        System.out.println(URI_DOSSIER_JSON + path);
         requestFileIntent.setDataAndType(Uri.parse(URI_DOSSIER_JSON + path), "text/json");
         startActivityForResult(requestFileIntent, REQUEST_FICHIER);
     }

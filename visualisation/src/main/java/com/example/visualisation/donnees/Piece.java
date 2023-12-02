@@ -2,11 +2,10 @@ package com.example.visualisation.donnees;
 
 import android.graphics.Rect;
 import androidx.annotation.NonNull;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.example.visualisation.exceptions.piece.ExceptionNombreMursInvalide;
 import com.example.visualisation.exceptions.piece.ExceptionPiecesReliesParPlusieursMurs;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -18,9 +17,6 @@ public class Piece {
     private int idPiece;
     private Modele modele;
     private ArrayList<Mur> listeMurs;
-
-    @JsonIgnore
-    private Porte ignored;
 
     /**
      * Constructeur d'une pièce

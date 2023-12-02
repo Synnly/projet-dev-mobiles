@@ -26,7 +26,7 @@ import java.util.ArrayList;
 public class ModifierAccesActivity extends AppCompatActivity {
 
     private Modele modele;
-    private Mur mur;
+    private Mur murActuel;
     private ArrayList<Porte> listePortes;
     private RecyclerView recyclerView;
     private String path;
@@ -55,16 +55,19 @@ public class ModifierAccesActivity extends AppCompatActivity {
             if (p.getIdPiece() == idPiece) {
                 for (Mur m : p.getListeMurs()) {
                     if (m.getOrientation() == orientation) {
-                        mur = m;
+                        murActuel = m;
+                        for(Porte p1 : m.getListePortes()){
+                            System.out.println(p1.getPieceArrivee());
+                        }
                         break;
                     }
                 }
                 break;
             }
         }
-        listePortes = mur.getListePortes();
+        listePortes = murActuel.getListePortes();
 
-        BitmapDrawable image = new BitmapDrawable(getResources(), mur.getImageBitmap());
+        BitmapDrawable image = new BitmapDrawable(getResources(), murActuel.getImageBitmap());
         ((ImageView) findViewById(R.id.imageMur)).setImageDrawable(image);
 
         // Initialisation des variables
@@ -88,7 +91,7 @@ public class ModifierAccesActivity extends AppCompatActivity {
      */
     public void creerRecyclerView() {
         recyclerView = findViewById(R.id.recyclerViewAcces);
-        RecyclerView.Adapter<AccesAdapter.AccesViewHolder> accesAdapter = new AccesAdapter(listePortes, modele.getListePieces());
+        RecyclerView.Adapter<AccesAdapter.AccesViewHolder> accesAdapter = new AccesAdapter(listePortes, modele.getListePieces(), murActuel.getPiece());
         recyclerView.setAdapter(accesAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(ModifierAccesActivity.this));
     }
@@ -133,7 +136,7 @@ public class ModifierAccesActivity extends AppCompatActivity {
                             rectangle = new Rect(pointeur1X, pointeur1Y, pointeur2X, pointeur2Y);
                             rectangle.sort();
 
-                            Porte porte = new Porte(mur, rectangle, null);
+                            Porte porte = new Porte(murActuel, rectangle, null);
                             clearCanvas(surfaceHolderDessin);
                             creerRecyclerView();
                         }

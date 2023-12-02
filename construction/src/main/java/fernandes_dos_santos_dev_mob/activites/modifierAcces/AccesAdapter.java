@@ -17,6 +17,7 @@ public class AccesAdapter extends RecyclerView.Adapter<AccesAdapter.AccesViewHol
 
     private ArrayList<Porte> listeAcces;
     private ArrayList<Piece> listePieces;
+    private Piece pieceActuelle;
 
     public static class AccesViewHolder extends RecyclerView.ViewHolder {
 
@@ -81,9 +82,10 @@ public class AccesAdapter extends RecyclerView.Adapter<AccesAdapter.AccesViewHol
         }
     }
 
-    public AccesAdapter(ArrayList<Porte> listeAcces, ArrayList<Piece> listePieces) {
+    public AccesAdapter(ArrayList<Porte> listeAcces, ArrayList<Piece> listePieces, Piece pieceActuelle) {
         this.listeAcces = listeAcces;
         this.listePieces = listePieces;
+        this.pieceActuelle = pieceActuelle;
     }
 
     @Override
@@ -96,7 +98,9 @@ public class AccesAdapter extends RecyclerView.Adapter<AccesAdapter.AccesViewHol
     public void onBindViewHolder(AccesViewHolder holder, int position) {
         holder.setPorte(listeAcces.get(position));
         holder.setIdPorte(listeAcces.get(position).getIdPorte());
-        holder.remplirSpinner(listePieces);
+        ArrayList<Piece> temp = new ArrayList<>(this.listePieces);
+        temp.remove(pieceActuelle);
+        holder.remplirSpinner(temp);
     }
 
     @Override

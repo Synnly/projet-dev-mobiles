@@ -95,8 +95,11 @@ public class ModifierModeleActivity extends AppCompatActivity {
                 if(resultCode == RESULT_OK){
                     try {
                         Modele modeleTemp = FilesUtils.chargerModele(this, path);
+
                         if(modeleTemp != null) {
+                            System.out.println(modeleTemp.toJSON());
                             modeleEnModification = new Modele(modeleTemp);
+                            System.out.println(modeleEnModification.toJSON());
                         }
                     } catch (IOException e) {
                         Toast.makeText(this, "Erreur lors de la lecture du modèle", Toast.LENGTH_SHORT).show();

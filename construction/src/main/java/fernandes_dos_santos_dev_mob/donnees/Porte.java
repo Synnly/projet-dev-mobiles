@@ -1,9 +1,7 @@
 package fernandes_dos_santos_dev_mob.donnees;
 
 import android.graphics.Rect;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionOrientationsIncoherentes;
 import fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionPiecesIdentiques;
 import fernandes_dos_santos_dev_mob.exceptions.porte.ExceptionPorteSansRetour;
@@ -18,6 +16,8 @@ public class Porte {
     private int right = -1;
     private int bottom = -1;
     private Mur murDepart;
+    private int idPieceArrivee;
+    @JsonIgnore
     private Piece pieceArrivee;
 
     /*
@@ -43,7 +43,7 @@ public class Porte {
         this.top = rectangle.top;
         this.right = rectangle.right;
         this.bottom = rectangle.bottom;
-        this.pieceArrivee = piece;
+        setPieceArrivee(piece);
         mur.ajouterPorte(this);
     }
 
@@ -55,6 +55,7 @@ public class Porte {
         this.idPorte = p.idPorte;
         this.murDepart = null;
         setRectangle(p.getRectangle());
+        this.idPieceArrivee = p.idPieceArrivee;
         this.pieceArrivee = null;
     }
 
@@ -65,6 +66,7 @@ public class Porte {
         this.top = 0;
         this.right = 0;
         this.bottom = 0;
+        this.idPieceArrivee = -1;
         this.pieceArrivee = null;
     }
 
@@ -130,6 +132,15 @@ public class Porte {
 
     public void setPieceArrivee(Piece pieceArrivee) {
         this.pieceArrivee = pieceArrivee;
+        this.idPieceArrivee = (pieceArrivee == null ? -1 : pieceArrivee.getIdPiece());
+    }
+
+    public void setIdPieceArrivee(int idPieceArrivee) {
+        this.idPieceArrivee = idPieceArrivee;
+    }
+
+    public int getIdPieceArrivee(){
+        return idPieceArrivee;
     }
 
     public int getLeft() {
