@@ -6,6 +6,8 @@
         <item name="solidRed" type="color">@color/redDark</item>
         <item name="solidGreen" type="color">@color/greenDark</item>
         <item name="solidBlue" type="color">@color/blueDark</item>
+        <item name="flecheGauche" type="drawable">@drawable/gauche_dark</item>
+        <item name="flecheDroite" type="drawable">@drawable/droite_dark</item>
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
 

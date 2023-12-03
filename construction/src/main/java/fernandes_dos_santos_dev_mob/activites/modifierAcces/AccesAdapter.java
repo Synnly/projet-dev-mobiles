@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,6 +26,8 @@ public class AccesAdapter extends RecyclerView.Adapter<AccesAdapter.AccesViewHol
         private TextView idPorte;
         private Porte porte;
         private ArrayList<Piece> listePieces;
+        private Button bouttonSupprimer;
+        private boolean suppresionDemande;
 
         public AccesViewHolder(View view) {
             super(view);
@@ -39,6 +42,19 @@ public class AccesAdapter extends RecyclerView.Adapter<AccesAdapter.AccesViewHol
                 public void onNothingSelected(android.widget.AdapterView<?> parent) {}
             });
             idPorte = view.findViewById(R.id.idPorte);
+            bouttonSupprimer = view.findViewById(R.id.boutonSupprimer);
+            suppresionDemande = false;
+            bouttonSupprimer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(suppresionDemande) {
+                        ((ModifierAccesActivity) v.getContext()).supprimerAcces(porte);
+                    } else {
+                        bouttonSupprimer.setText("Confirmer ?");
+                        suppresionDemande = true;
+                    }
+                }
+            });
         }
 
         /**

@@ -11,6 +11,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.R;
 import com.example.visualisation.activities.pieceDepart.ChoisirPieceDepartActivity;
 import com.example.visualisation.donnees.Modele;
+import com.example.visualisation.donnees.Mur;
+import com.example.visualisation.donnees.Piece;
+import com.example.visualisation.donnees.Porte;
 import com.example.visualisation.filesUtils.FilesUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -137,7 +140,20 @@ public class MainActivity extends AppCompatActivity {
                 builder.append("\n");
             }
             is.close();
-            return new ObjectMapper().readValue(builder.toString(), Modele.class);
+
+            // Creation du modele
+            Modele modele = new ObjectMapper().readValue(builder.toString(), Modele.class);
+
+            for(Piece p : modele.getListePieces()){
+                for(Mur m : p.getListeMurs()){
+                    for (Porte porte : m.getListePortes()) {
+                        if(porte.getIdPieceArrivee() > -1) {
+                            porte.setPieceArrivee(modele.getPiece(porte.getIdPieceArrivee()));
+                        }
+                    }
+                }
+            }
+            return modele;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -165,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
         catch (Exception e){
-            Toast.makeText(this, "Erreur : "+e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this,e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 }

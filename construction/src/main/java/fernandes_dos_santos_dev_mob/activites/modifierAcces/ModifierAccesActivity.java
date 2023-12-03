@@ -35,16 +35,17 @@ public class ModifierAccesActivity extends AppCompatActivity {
     private Rect rectangle;
     private ImageView imageView;
     private Paint peintureBleue, peintureNoire;
+    private SurfaceView surfaceDessin;
     private static final int TAILLE_TEXTE = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modifier_acces);
-
+        path = getIntent().getStringExtra("path");
         // Chargement du modele
         try {
-            modele = FilesUtils.chargerModele(this, getIntent().getStringExtra("path"));
+            modele = FilesUtils.chargerModele(this, path);
         } catch (IOException e) {
             Toast.makeText(this, "Erreur lors de la lecture du modèle", Toast.LENGTH_SHORT).show();
         }
@@ -57,9 +58,6 @@ public class ModifierAccesActivity extends AppCompatActivity {
                 for (Mur m : p.getListeMurs()) {
                     if (m.getOrientation() == orientation) {
                         murActuel = m;
-                        for(Porte p1 : m.getListePortes()){
-                            System.out.println(p1.getPieceArrivee());
-                        }
                         break;
                     }
                 }
@@ -73,7 +71,7 @@ public class ModifierAccesActivity extends AppCompatActivity {
         ((ImageView) findViewById(R.id.imageMur)).setImageDrawable(image);
 
         // Initialisation des variables
-        SurfaceView surfaceDessin = findViewById(R.id.rectangleSelection);
+        surfaceDessin = findViewById(R.id.rectangleSelection);
         SurfaceHolder surfaceHolderDessin = surfaceDessin.getHolder();
 
         // Preparation du holder
@@ -263,5 +261,15 @@ public class ModifierAccesActivity extends AppCompatActivity {
         peintureNoire.setColor(Color.BLACK);
         peintureNoire.setTextSize(TAILLE_TEXTE);
         peintureNoire.setStyle(Paint.Style.FILL);
+    }
+
+    /**
+     * Supprime l'acces de la liste des acces et met a jour le RecyclerView et la surface de dessin
+     * @param acces L'acces a supprimer
+     */
+    public void supprimerAcces(Porte acces){
+        listePortes.remove(acces);
+        clearCanvas(surfaceDessin.getHolder());
+        creerRecyclerView();
     }
 }

@@ -17,7 +17,8 @@ public class ModeleAdapter extends RecyclerView.Adapter<ModeleAdapter.ModeleView
     public static class ModeleViewHolder extends RecyclerView.ViewHolder {
 
         private Modele modele;
-        private AppCompatButton boutonModifierModele;
+        private AppCompatButton boutonModifierModele, boutonSupprimer;
+        private boolean suppressionDemandee;
 
         public ModeleViewHolder(View view) {
             super(view);
@@ -26,6 +27,20 @@ public class ModeleAdapter extends RecyclerView.Adapter<ModeleAdapter.ModeleView
                 @Override
                 public void onClick(View v) {
                     ((MainActivity) view.getContext()).changerActiviteModifierModeleActivity(getAdapterPosition());
+                }
+            });
+            boutonSupprimer = view.findViewById(R.id.boutonSupprimer);
+            suppressionDemandee = false;
+            boutonSupprimer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(!suppressionDemandee){
+                        boutonSupprimer.setText("Confirmer ?");
+                        suppressionDemandee = true;
+                    }
+                    else{
+                        ((MainActivity) view.getContext()).supprimerModele(getAdapterPosition());
+                    }
                 }
             });
         }

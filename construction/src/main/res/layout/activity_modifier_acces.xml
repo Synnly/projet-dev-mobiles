@@ -25,7 +25,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginBottom="32dp"
             android:layout_marginEnd="32dp" android:layout_marginStart="32dp" android:id="@+id/recyclerViewAcces"
-            app:layout_constraintBottom_toTopOf="@+id/boutonValiderAcces"/>
+            app:layout_constraintBottom_toTopOf="@+id/boutonValiderAcces"
+            app:layout_constraintTop_toBottomOf="@+id/imageMur"/>
 
     <androidx.appcompat.widget.AppCompatButton
             android:layout_width="wrap_content" android:layout_height="wrap_content"

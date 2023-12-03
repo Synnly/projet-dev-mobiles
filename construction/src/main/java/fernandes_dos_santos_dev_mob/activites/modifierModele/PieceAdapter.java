@@ -23,7 +23,9 @@ public class PieceAdapter extends RecyclerView.Adapter<PieceAdapter.PieceViewHol
         private Piece piece;
         private Button imageNord, imageEst, imageSud, imageOuest;
         private Button bouttonNord, bouttonEst, bouttonSud, bouttonOuest;
+        private Button bouttonSupprimer;
         private TextView nomPiece;
+        private boolean suppresionDemande;
 
         public PieceViewHolder(View view) {
             super(view);
@@ -41,6 +43,9 @@ public class PieceAdapter extends RecyclerView.Adapter<PieceAdapter.PieceViewHol
             bouttonSud = view.findViewById(R.id.boutonPhotoSud);
             bouttonOuest = view.findViewById(R.id.boutonPhotoOuest);
 
+            bouttonSupprimer = view.findViewById(R.id.boutonSupprimerPiece);    // Vue du bouton supprimer
+            suppresionDemande = false;
+
             // Ecouteur du nom de la pièce
             nomPiece.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -56,18 +61,7 @@ public class PieceAdapter extends RecyclerView.Adapter<PieceAdapter.PieceViewHol
                     }
                 }
             });
-
-            // Ecouteurs des boutons pour prendre une photo
-            creerEcouteurButtonPhoto(bouttonNord, Mur.NORD);
-            creerEcouteurButtonPhoto(bouttonEst, Mur.EST);
-            creerEcouteurButtonPhoto(bouttonSud, Mur.SUD);
-            creerEcouteurButtonPhoto(bouttonOuest, Mur.OUEST);
-
-            // Ecouteurs des boutons pour modifier les accès
-            creerEcouteurButtonAcces(imageNord, Mur.NORD);
-            creerEcouteurButtonAcces(imageEst, Mur.EST);
-            creerEcouteurButtonAcces(imageSud, Mur.SUD);
-            creerEcouteurButtonAcces(imageOuest, Mur.OUEST);
+            creerEcouteurs();
         }
 
         /**
@@ -137,6 +131,34 @@ public class PieceAdapter extends RecyclerView.Adapter<PieceAdapter.PieceViewHol
                 @Override
                 public void onClick(View v) {
                     ((ModifierModeleActivity) view.getContext()).changerActiviteModifierAccesActivity(piece.getIdPiece(), orientation);
+                }
+            });
+        }
+
+        /**
+         * Initialise les écouteurs des boutons
+         */
+        public void creerEcouteurs(){
+            creerEcouteurButtonPhoto(bouttonNord, Mur.NORD);
+            creerEcouteurButtonPhoto(bouttonEst, Mur.EST);
+            creerEcouteurButtonPhoto(bouttonSud, Mur.SUD);
+            creerEcouteurButtonPhoto(bouttonOuest, Mur.OUEST);
+
+            creerEcouteurButtonAcces(imageNord, Mur.NORD);
+            creerEcouteurButtonAcces(imageEst, Mur.EST);
+            creerEcouteurButtonAcces(imageSud, Mur.SUD);
+            creerEcouteurButtonAcces(imageOuest, Mur.OUEST);
+
+            bouttonSupprimer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(!suppresionDemande) {
+                        bouttonSupprimer.setText("Confirmer ?");
+                        suppresionDemande = true;
+                    }
+                    else {
+                        ((ModifierModeleActivity) v.getContext()).supprimerPiece(piece.getIdPiece());
+                    }
                 }
             });
         }

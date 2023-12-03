@@ -12,6 +12,8 @@
         <item name="solidRed" type="color">@color/redLight</item>
         <item name="solidGreen" type="color">@color/greenLight</item>
         <item name="solidBlue" type="color">@color/blueLight</item>
+        <item name="flecheGauche" type="drawable">@drawable/gauche_light</item>
+        <item name="flecheDroite" type="drawable">@drawable/droite_light</item>
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 

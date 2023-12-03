@@ -33,7 +33,7 @@ public class ModifierModeleActivity extends AppCompatActivity {
 
     private Modele modele, modeleEnModification;
     private int indicePiecePhoto, orientationPhoto;
-    private String path;
+    private String modelePath, modeleTempPath;
     private final static int INTENT_PRENDRE_PHOTO = 1;
     private final static int INTENT_MODIFIER_ACCES = 2;
     private final static int REQUEST_CODE_PERMISSIONS = 100;
@@ -45,10 +45,11 @@ public class ModifierModeleActivity extends AppCompatActivity {
         setContentView(R.layout.activity_modifier_modele);
 
         // Récupération du modèle
-        path = getIntent().getStringExtra("path");
-        if (path != null) { // Le modèle existe déjà
+        modelePath = getIntent().getStringExtra("path");
+        modeleTempPath = "temp.json";
+        if (modelePath != null) { // Le modèle existe déjà
             try {
-                modele = FilesUtils.chargerModele(this, path);
+                modele = FilesUtils.chargerModele(this, modelePath);
             } catch (IOException e) {
                 Toast.makeText(this, "Erreur lors de la lecture du modèle", Toast.LENGTH_SHORT).show();
                 annuler(null);
@@ -59,7 +60,7 @@ public class ModifierModeleActivity extends AppCompatActivity {
         }
         else { // Création d'un nouveau modèle
             modele = new Modele(getIntent().getStringExtra("nom"));
-            path = modele.getNomModele()+".json";
+            modelePath = modele.getNomModele()+".json";
         }
 
         modeleEnModification = new Modele(modele); // Copie du modèle pour les modifications
@@ -94,7 +95,7 @@ public class ModifierModeleActivity extends AppCompatActivity {
 
                 case INTENT_MODIFIER_ACCES:
                     try {
-                        Modele modeleTemp = FilesUtils.chargerModele(this, path);
+                        Modele modeleTemp = FilesUtils.chargerModele(this, modeleTempPath);
 
                         if (modeleTemp != null) {
                             modeleEnModification = new Modele(modeleTemp);
@@ -163,6 +164,11 @@ public class ModifierModeleActivity extends AppCompatActivity {
             Mur mur = new Mur(orientationPhoto);
             mur.setBinaireImage(binaireImage);
             modeleEnModification.getListePieces().get(indicePiecePhoto).ajouterMur(mur);
+            try {
+                FilesUtils.ecrireTexte(this, modeleEnModification.toJSON(), modeleTempPath);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
             // Fermeture du fichier
             try {
@@ -209,12 +215,12 @@ public class ModifierModeleActivity extends AppCompatActivity {
     public void valider(View view){
         modele = modeleEnModification;
         try {
-            FilesUtils.ecrireTexte(this, modele.toJSON(), path);
+            FilesUtils.ecrireTexte(this, modele.toJSON(), modelePath);
         } catch (IOException e) {
             Toast.makeText(this, "Erreur lors de la sauvegarde du modèle", Toast.LENGTH_SHORT).show();
         }
         Intent intent = new Intent();
-        intent.putExtra("path", path);
+        intent.putExtra("path", modelePath);
         terminerActivite(RESULT_OK, intent);
     }
 
@@ -243,11 +249,20 @@ public class ModifierModeleActivity extends AppCompatActivity {
         if(modeleEnModification.getListePieces().get(idPiece).getMur(orientation) != null) {
             intent.putExtra("idPiece", idPiece);
             intent.putExtra("orientation", orientation);
-            intent.putExtra("path", path);
+            intent.putExtra("path", modeleTempPath);
             startActivityForResult(intent, INTENT_MODIFIER_ACCES);
         }
         else{
             Toast.makeText(this, "Veuillez prendre une photo du mur avant.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * Supprime la pièce de l'indice donné. Met à jour le RecyclerView
+     * @param indice l'indice de la pièce
+     */
+    public void supprimerPiece(int indice){
+        modeleEnModification.getListePieces().remove(indice);
+        creerRecyclerView();
     }
 }

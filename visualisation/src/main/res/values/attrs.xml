@@ -1,0 +1,6 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <declare-styleable name="customAttrs">
+        <attr name="flecheGauche" format="reference"/>
+        <attr name="flecheDroite" format="reference"/>
+    </declare-styleable>
+</resources>

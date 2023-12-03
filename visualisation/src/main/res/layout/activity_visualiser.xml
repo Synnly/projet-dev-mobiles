@@ -29,16 +29,18 @@
             app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"/>
 
     <androidx.appcompat.widget.AppCompatButton
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_width="64dp" android:layout_height="64dp"
             android:id="@+id/boutonGauche" android:onClick="rotationGauche"
+            android:background="?attr/flecheGauche"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageViewPiece"
             app:layout_constraintEnd_toStartOf="@+id/textViewOrientation"/>
 
     <androidx.appcompat.widget.AppCompatButton
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_width="64dp" android:layout_height="64dp"
             android:id="@+id/boutonDroite" android:onClick="rotationDroite"
+            android:background="?attr/flecheDroite"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageViewPiece"

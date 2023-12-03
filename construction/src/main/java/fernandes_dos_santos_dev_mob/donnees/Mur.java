@@ -159,10 +159,12 @@ public class Mur {
             porte.valider();
 
             for(Porte porte1 : this.listePortes){
-                Rect a = porte.getRectangle();
-                Rect b = porte1.getRectangle();
-                if(a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom){
-                    throw new ExceptionPortesSeSuperposent(porte.getIdPorte(), porte1.getIdPorte());
+                if(porte.getIdPorte() != porte1.getIdPorte()){
+                    Rect a = porte.getRectangle();
+                    Rect b = porte1.getRectangle();
+                    if(a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom){
+                        throw new ExceptionPortesSeSuperposent(porte.getIdPorte(), porte1.getIdPorte());
+                    }
                 }
             }
         }

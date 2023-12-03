@@ -98,8 +98,15 @@ public class MainActivity extends AppCompatActivity {
      * @param view La vue
      */
     public void nouveauModele(View view){
-        this.listeModeles.add(new Modele());
-        this.cheminsModeles.add(null);
+        Modele modele = new Modele();
+        this.listeModeles.add(modele);
+        this.cheminsModeles.add(modele.getNomModele()+".json");
+        try {
+            FilesUtils.ecrireTexte(this, modele.toJSON(), modele.getNomModele()+".json");
+            enregistrerChemins();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         creerRecyclerView();
     }
 
@@ -154,6 +161,17 @@ public class MainActivity extends AppCompatActivity {
      */
     public void resetFabriqueIdModeles(){
         FabriqueIDs.getinstance().initIDModele(listeModeles.size());
+    }
+
+    /**
+     * Supprime le modèle à l'indice donné
+     * @param indice L'indice du modèle à supprimer
+     */
+    public void supprimerModele(int indice) {
+        listeModeles.remove(indice);
+        cheminsModeles.remove(indice);
+        enregistrerChemins();
+        creerRecyclerView();
     }
 
 }
