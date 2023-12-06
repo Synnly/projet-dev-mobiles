@@ -80,7 +80,11 @@ public class ModifierModeleActivity extends AppCompatActivity {
                 modeleEnModification.setNomModele(s.toString());
             }
         });
-
+        try {
+            FilesUtils.ecrireTexte(this, modeleEnModification.toJSON(), modeleTempPath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         creerRecyclerView();
     }
 
