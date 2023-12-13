@@ -5,9 +5,9 @@
         android:layout_height="wrap_content" android:paddingBottom="5dp">
 
     <EditText
-            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:inputType="text" android:text="nomPiece"
-            android:id="@+id/texteNomPiece" android:background="@android:color/transparent"
+            android:id="@+id/texteNomPiece"
             app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"/>
 
     <LinearLayout

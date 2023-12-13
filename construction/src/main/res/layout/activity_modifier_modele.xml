@@ -8,10 +8,18 @@
         tools:context="fernandes_dos_santos_dev_mob.activites.modifierModele.ModifierModeleActivity">
 
     <EditText
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:id="@+id/texteNomModele" android:background="@android:color/transparent"
-            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="24dp" android:textSize="34sp"/>
+        android:id="@+id/texteNomModele"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="32dp"
+        android:textAlignment="center"
+
+        android:textSize="34sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
             android:layout_width="0dp" android:layout_height="0dp"
